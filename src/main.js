@@ -54,7 +54,7 @@ if (films.length > FILM_CARDS_COUNT_INLINE) {
     evt.preventDefault();
     films
       .slice(renderedFilmCount, renderedFilmCount + FILM_CARDS_COUNT_INLINE)
-      .forEach((film) => renderTemplate(filmListContainer, generateFilmInfo(film), RenderPosition.BEFOREEND));
+      .forEach((film) => renderTemplate(filmListContainer, createFilmCardTemplate(film), RenderPosition.BEFOREEND));
     renderedFilmCount += FILM_CARDS_COUNT_INLINE;
 
     if (renderedFilmCount >= films.length) {
