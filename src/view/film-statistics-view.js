@@ -1,8 +1,12 @@
 import { createElement } from '../render';
 
-const createShowButtonTemplate = () => '<button class="films-list__show-more">Show more</button>';
+const createSiteStatistics = () => (
+  `<section class="footer__statistics">
+  <p>130 291 movies inside</p>
+</section>`
+);
 
-export default class ShowButtonView {
+export default class SiteStatsView {
   #element = null;
 
   get element() {
@@ -14,7 +18,7 @@ export default class ShowButtonView {
   }
 
   get template() {
-    return createShowButtonTemplate();
+    return createSiteStatistics();
   }
 
   removeElement() {

@@ -1,6 +1,7 @@
 import { generateFilmPopup } from '../mock/popup-films';
+import { createElement } from '../render';
 
-export const createFilmDetailsTemplate = () => {
+const createFilmDetailsTemplate = () => {
   const filmPopup = generateFilmPopup();
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -167,3 +168,28 @@ export const createFilmDetailsTemplate = () => {
   </form>
 </section>`;
 };
+
+export default class FilmPopupView {
+  #element = null;
+  #film = null;
+
+  constructor(film) {
+    this.#film = film;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFilmDetailsTemplate();
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
