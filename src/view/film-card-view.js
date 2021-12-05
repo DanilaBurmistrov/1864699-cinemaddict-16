@@ -1,4 +1,5 @@
 import { generateFilmInfo } from '../mock/card-films';
+import { createElement } from '../render';
 
 const addFilmStatusControls = (valueControls, template) => {
   if (valueControls) {
@@ -7,7 +8,7 @@ const addFilmStatusControls = (valueControls, template) => {
   return '';
 };
 
-export const createFilmCardTemplate = () => {
+const createFilmCardTemplate = () => {
   const filmInfo = generateFilmInfo();
   const classControls = 'film-card__controls-item--active';
   return `<article class="film-card">
@@ -31,11 +32,27 @@ export const createFilmCardTemplate = () => {
 </article>`;
 };
 
-export const createFilmListTemplate = () => (
-  `<section class="films">
-    <section class="films-list">
-      <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
-      <div class="films-list__container"></div>
-    </section>
-  </section>`
-);
+export default class FilmCardView {
+  #element = null;
+  #film = null;
+
+  constructor(film) {
+    this.#film = film;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFilmCardTemplate();
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

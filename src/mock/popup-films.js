@@ -17,10 +17,6 @@ function getRandomNumberInRange (min, max) {
   return Math.random() * (max - min + 1) + min;
 }
 
-function getRandomFloat(min, max, numberAfterComma) {
-  return getRandomNumberInRange(min, max).toFixed(numberAfterComma);
-}
-
 function getRandomInteger(min, max) {
   return Math.floor(getRandomNumberInRange(min, max));
 }
@@ -58,7 +54,7 @@ const generatePoster = () => {
 };
 
 const generateRaiting = () => {
-  const raiting = getRandomFloat(1.0, 10.0, 1);
+  const raiting = getRandomInteger(1, 10);
   return raiting;
 };
 
