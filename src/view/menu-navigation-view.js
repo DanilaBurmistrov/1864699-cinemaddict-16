@@ -12,7 +12,7 @@ const createMenuItemTemplate = (filters) => {
     </nav>`;
 };
 
-export default class FilmNavigationView {
+export default class MenuNavigationView {
   #element = null;
   #filters = null;
 

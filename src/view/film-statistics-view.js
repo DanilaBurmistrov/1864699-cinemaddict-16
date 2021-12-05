@@ -6,7 +6,7 @@ const createSiteStatistics = () => (
 </section>`
 );
 
-export default class SiteStatsView {
+export default class FilmStatisticsView {
   #element = null;
 
   get element() {

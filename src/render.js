@@ -19,6 +19,8 @@ export const renderElement = (container, element, place) => {
     case RenderPosition.AFTEREND:
       container.after(element);
       break;
+    default:
+      container.append(element);
   }
 };
 

@@ -1,16 +1,16 @@
-import FilmNavigationView from './view/menu-navigation-view.js';
-import FilmCardView from './view/film-card-view.js';
-import ShowButtonView from './view/show-button-view.js';
-import FilmPopupView from './view/film-popup-view.js';
-import SortView from './view/sort-view.js';
-import SiteStatsView from './view/film-statistics-view.js';
-import UserRatingView from './view/user-rating-view.js';
 import FilmListView from './view/film-list-view.js';
-
+import FilmCardView from './view/film-card-view.js';
+import FilmPopupView from './view/film-popup-view.js';
+import FilmStatisticsView from './view/film-statistics-view.js';
+import {generateFilmInfo} from './mock/card-films.js';
+import {generateFilters} from './mock/navigation.js';
+import MenuNavigationView from './view/menu-navigation-view.js';
 import {renderElement,
   RenderPosition} from './render.js';
-import {generateFilmInfo} from './mock/card-films.js';
-import { generateFilters } from './mock/navigation.js';
+import ShowButtonView from './view/show-button-view.js';
+import SortView from './view/sort-view.js';
+import UserRatingView from './view/user-rating-view.js';
+
 
 const CARD_COUNT = 15;
 const FILM_CARDS_COUNT_INLINE = 5;
@@ -23,8 +23,8 @@ const siteMainElement = document.querySelector('.main');
 const siteFooter = document.querySelector('.footer');
 const siteFooterStatistics = siteFooter.querySelector('.footer__statistics');
 
-renderElement(siteMainElement, new FilmNavigationView(filters).element, RenderPosition.BEFOREEND);
-renderElement(siteFooterStatistics, new SiteStatsView().element, RenderPosition.BEFOREEND);
+renderElement(siteMainElement, new MenuNavigationView(filters).element, RenderPosition.BEFOREEND);
+renderElement(siteFooterStatistics, new FilmStatisticsView().element, RenderPosition.BEFOREEND);
 renderElement(siteHeader, new UserRatingView().element, RenderPosition.BEFOREEND);
 renderElement(siteMainElement, new SortView().element, RenderPosition.BEFOREEND);
 renderElement(siteMainElement, new FilmListView().element, RenderPosition.BEFOREEND);
