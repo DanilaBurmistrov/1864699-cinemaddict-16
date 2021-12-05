@@ -5,12 +5,12 @@ import FilmStatisticsView from './view/film-statistics-view.js';
 import {generateFilmInfo} from './mock/card-films.js';
 import {generateFilters} from './mock/navigation.js';
 import MenuNavigationView from './view/menu-navigation-view.js';
+import NoFilmsView from './view/no-films-view.js';
 import {renderElement,
   RenderPosition} from './render.js';
 import ShowButtonView from './view/show-button-view.js';
 import SortView from './view/sort-view.js';
 import UserRatingView from './view/user-rating-view.js';
-import NoFilmsView from './view/no-films-view.js';
 
 
 const CARD_COUNT = 15;
