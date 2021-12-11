@@ -1,5 +1,5 @@
 import { generateFilmInfo } from '../mock/card-films';
-import { createElement } from '../render';
+import AbstractView from './abstract-view';
 
 const addFilmStatusControls = (valueControls, template) => {
   if (valueControls) {
@@ -32,27 +32,25 @@ const createFilmCardTemplate = () => {
 </article>`;
 };
 
-export default class FilmCardView {
-  #element = null;
+export default class FilmCardView extends AbstractView {
   #film = null;
 
   constructor(film) {
+    super();
     this.#film = film;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createFilmCardTemplate();
   }
 
-  removeElement() {
-    this.#element = null;
+  setCardClickHandler = (callback) => {
+    this._callback.cardClick = callback;
+    this.element.querySelector('.film-card__link').addEventListener('click', this.#cardClickHandler);
+  }
+
+  #cardClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.cardClick();
   }
 }
