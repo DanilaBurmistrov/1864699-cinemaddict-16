@@ -6,8 +6,9 @@ import {generateFilmInfo} from './mock/card-films.js';
 import {generateFilters} from './mock/navigation.js';
 import MenuNavigationView from './view/menu-navigation-view.js';
 import NoFilmsView from './view/no-films-view.js';
-import {renderElement,
-  RenderPosition} from './render.js';
+import {render,
+  RenderPosition,
+  remove} from './render.js';
 import ShowButtonView from './view/show-button-view.js';
 import SortView from './view/sort-view.js';
 import UserRatingView from './view/user-rating-view.js';
@@ -23,18 +24,24 @@ const siteHeader = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
 const siteFooter = document.querySelector('.footer');
 const siteFooterStatistics = siteFooter.querySelector('.footer__statistics');
+const menuNavigationComponent = new MenuNavigationView(filters);
+const filmStatisticsComponent = new FilmStatisticsView();
+const userRatingComponent = new UserRatingView();
+const sortComponent = new SortView();
+const filmListComponent = new FilmListView();
 
-renderElement(siteMainElement, new MenuNavigationView(filters).element, RenderPosition.BEFOREEND);
-renderElement(siteFooterStatistics, new FilmStatisticsView().element, RenderPosition.BEFOREEND);
-renderElement(siteHeader, new UserRatingView().element, RenderPosition.BEFOREEND);
-renderElement(siteMainElement, new SortView().element, RenderPosition.BEFOREEND);
-renderElement(siteMainElement, new FilmListView().element, RenderPosition.BEFOREEND);
+render(siteMainElement, menuNavigationComponent, RenderPosition.BEFOREEND);
+render(siteFooterStatistics, filmStatisticsComponent, RenderPosition.BEFOREEND);
+render(siteHeader, userRatingComponent, RenderPosition.BEFOREEND);
+render(siteMainElement, sortComponent, RenderPosition.BEFOREEND);
+render(siteMainElement, filmListComponent, RenderPosition.BEFOREEND);
 
 const filmListContainer = siteMainElement.querySelector('.films-list__container');
 
 const renderFilmCard = (container, film) => {
   const filmCardComponent = new FilmCardView(film);
-  renderElement(container, filmCardComponent.element, RenderPosition.BEFOREEND);
+
+  render(container, filmCardComponent, RenderPosition.BEFOREEND);
 
   const popupComponent = new FilmPopupView(film);
 
@@ -47,23 +54,26 @@ const renderFilmCard = (container, film) => {
     }
   };
 
-  filmCardComponent.element.querySelector('.film-card__link').addEventListener('click', (evt) => {
-    evt.preventDefault();
+  filmCardComponent.setCardClickHandler(() => {
     container.appendChild(popupComponent.element);
     document.addEventListener('keydown', onEscKeyDown);
     container.classList.add('hide-overflow');
   });
 
-  popupComponent.element.querySelector('.film-details__close-btn').addEventListener('click', (evt) => {
-    evt.preventDefault();
+  popupComponent.setCloseButtonClickHandler(() => {
     container.removeChild(popupComponent.element);
     document.removeEventListener('keydown', onEscKeyDown);
     container.classList.remove('hide-overflow');
   });
 };
 
+const noFilmsComponent = new NoFilmsView();
+const showButtonComponent = new ShowButtonView();
+
 if (films.length === 0) {
-  renderElement(filmListContainer, new NoFilmsView().element, RenderPosition.BEFOREEND);
+
+  render(filmListContainer, noFilmsComponent, RenderPosition.BEFOREEND);
+
 } else {
   for (let i = 0; i < FILM_CARDS_COUNT_INLINE; i++) {
     renderFilmCard(filmListContainer, films[i]);
@@ -74,7 +84,7 @@ if (films.length === 0) {
   if (films.length > FILM_CARDS_COUNT_INLINE) {
     let renderedFilmCount = FILM_CARDS_COUNT_INLINE;
 
-    renderElement(siteFilmList, new ShowButtonView().element, RenderPosition.BEFOREEND);
+    render(siteFilmList, showButtonComponent, RenderPosition.BEFOREEND);
 
     const loadMoreButton = siteFilmList.querySelector('.films-list__show-more');
 
@@ -86,7 +96,7 @@ if (films.length === 0) {
       renderedFilmCount += FILM_CARDS_COUNT_INLINE;
 
       if (renderedFilmCount >= films.length) {
-        loadMoreButton.remove();
+        remove(showButtonComponent);
       }
     });
   }
