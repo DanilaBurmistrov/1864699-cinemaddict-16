@@ -1,8 +1,41 @@
-import { generateFilmPopup } from '../mock/popup-films';
 import AbstractView from './abstract-view';
+import { FilmActionType } from '../render';
+import { getFormattedDate } from '../utils/common';
+import { generateFilmInfo } from '../mock/films-info';
+
+const filmInfo = generateFilmInfo();
+
+const generateGenresTemplate = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
+
+const generateComment = (comment) => {
+  const {
+    emoji,
+    text,
+    author,
+    day
+  } = comment;
+
+  return `<li class="film-details__comment">
+      <span class="film-details__comment-emoji">
+        <img src="${emoji}" width="55" height="55" alt="emoji">
+      </span>
+      <div>
+        <p class="film-details__comment-text">${text}</p>
+        <p class="film-details__comment-info">
+          <span class="film-details__comment-author">${author}</span>
+          <span class="film-details__comment-day">${getFormattedDate(day, 'YYYY/MM/DD HH:mm')}</span>
+          <button class="film-details__comment-delete">Delete</button>
+        </p>
+      </div>
+    </li>`;
+};
+
+const generateCommentTemplate = (commentList) => commentList.map((comment) => generateComment(comment)).join('');
 
 const createFilmDetailsTemplate = () => {
-  const filmPopup = generateFilmPopup();
+
+  const activeClassName = (item) => item ? 'film-details__control-button--active' : '';
+
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__top-container">
@@ -11,152 +44,100 @@ const createFilmDetailsTemplate = () => {
       </div>
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
-          <img class="film-details__poster-img" src="${filmPopup.poster}">
-
-          <p class="film-details__age">${filmPopup.age}</p>
+          <img class="film-details__poster-img" src="${filmInfo.poster}" alt="">
+          <p class="film-details__age">${filmInfo.age}+</p>
         </div>
-
         <div class="film-details__info">
           <div class="film-details__info-head">
             <div class="film-details__title-wrap">
-              <h3 class="film-details__title">${filmPopup.title}</h3>
-              <p class="film-details__title-original">Original: The Great Flamarion</p>
+              <h3 class="film-details__title">${filmInfo.title}</h3>
+              <p class="film-details__title-original">Original: ${filmInfo.title}</p>
             </div>
-
             <div class="film-details__rating">
-              <p class="film-details__total-rating">${filmPopup.rating}</p>
+              <p class="film-details__total-rating">${filmInfo.rating}</p>
             </div>
           </div>
-
           <table class="film-details__table">
             <tr class="film-details__row">
               <td class="film-details__term">Director</td>
-              <td class="film-details__cell">Anthony Mann</td>
+              <td class="film-details__cell">${filmInfo.director}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Writers</td>
-              <td class="film-details__cell">Anne Wigton, Heinz Herald, Richard Weil</td>
+              <td class="film-details__cell">${filmInfo.writers}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Actors</td>
-              <td class="film-details__cell">Erich von Stroheim, Mary Beth Hughes, Dan Duryea</td>
+              <td class="film-details__cell">${filmInfo.actors}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${filmPopup.releaseDate}</td>
+              <td class="film-details__cell">${filmInfo.releaseDate}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${filmPopup.duration}</td>
+              <td class="film-details__cell">${filmInfo.duration}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
-              <td class="film-details__cell">USA</td>
+              <td class="film-details__cell">${filmInfo.countries}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Genres</td>
-              <td class="film-details__cell">
-                <span class="film-details__genre">${filmPopup.genre}</span>
-                <span class="film-details__genre">${filmPopup.genre}</span>
-                <span class="film-details__genre">${filmPopup.genre}</span></td>
+              <td class="film-details__cell">${generateGenresTemplate(filmInfo.genre)}</td>
             </tr>
           </table>
-
-          <p class="film-details__film-description">
-          ${filmPopup.description}
-          </p>
+          <p class="film-details__film-description">${filmInfo.description}</p>
         </div>
       </div>
-
       <section class="film-details__controls">
-        <button type="button" class="film-details__control-button film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
-        <button type="button" class="film-details__control-button film-details__control-button--active film-details__control-button--watched" id="watched" name="watched">Already watched</button>
-        <button type="button" class="film-details__control-button film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
+        <button type="button" data-action-type="${FilmActionType.ADD_WATCH_LIST}"
+                class="film-details__control-button
+                      film-details__control-button--watchlist
+                      ${activeClassName(!filmInfo.isInWatchList)}"
+                id="watchlist" name="watchlist">
+                Add to watchlist
+        </button>
+        <button type="button" data-action-type="${FilmActionType.MARK_WATCHED}"
+                class="film-details__control-button
+                      film-details__control-button--watched
+                      ${activeClassName(filmInfo.isWatched)}"
+                id="watched" name="watched">
+                Already watched
+        </button>
+        <button type="button" data-action-type="${FilmActionType.MARK_FAVORITE}"
+                class="film-details__control-button
+                      film-details__control-button--favorite
+                      ${activeClassName(filmInfo.isFavorite)}"
+                id="favorite" name="favorite">
+                Add to favorites
+        </button>
       </section>
     </div>
-
     <div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">4</span></h3>
-
+        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${filmInfo.comments.length}</span></h3>
         <ul class="film-details__comments-list">
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/smile.png" width="55" height="55" alt="emoji-smile">
-            </span>
-            <div>
-              <p class="film-details__comment-text">Interesting setting and a good cast</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">Tim Macoveev</span>
-                <span class="film-details__comment-day">2019/12/31 23:59</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/sleeping.png" width="55" height="55" alt="emoji-sleeping">
-            </span>
-            <div>
-              <p class="film-details__comment-text">Booooooooooring</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">John Doe</span>
-                <span class="film-details__comment-day">2 days ago</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/puke.png" width="55" height="55" alt="emoji-puke">
-            </span>
-            <div>
-              <p class="film-details__comment-text">Very very old. Meh</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">John Doe</span>
-                <span class="film-details__comment-day">2 days ago</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/angry.png" width="55" height="55" alt="emoji-angry">
-            </span>
-            <div>
-              <p class="film-details__comment-text">Almost two hours? Seriously?</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">John Doe</span>
-                <span class="film-details__comment-day">Today</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>
+          ${generateCommentTemplate(filmInfo.comments)}
         </ul>
-
         <div class="film-details__new-comment">
           <div class="film-details__add-emoji-label"></div>
-
           <label class="film-details__comment-label">
             <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
           </label>
-
           <div class="film-details__emoji-list">
             <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
             <label class="film-details__emoji-label" for="emoji-smile">
               <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
             </label>
-
             <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
             <label class="film-details__emoji-label" for="emoji-sleeping">
               <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
             </label>
-
             <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
             <label class="film-details__emoji-label" for="emoji-puke">
               <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
             </label>
-
             <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
             <label class="film-details__emoji-label" for="emoji-angry">
               <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
@@ -171,6 +152,10 @@ const createFilmDetailsTemplate = () => {
 
 export default class FilmPopupView extends AbstractView {
   #film = null;
+  #closeButtonElement = null;
+  #buttonWatchListElement = null;
+  #buttonWatchedElement = null;
+  #buttonFavoriteElement = null;
 
   constructor(film) {
     super();
@@ -178,16 +163,35 @@ export default class FilmPopupView extends AbstractView {
   }
 
   get template() {
-    return createFilmDetailsTemplate();
+    return createFilmDetailsTemplate(this.#film);
   }
 
-  setCloseButtonClickHandler = (callback) => {
-    this._callback.CloseButtonClick = callback;
-    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#CloseButtonClickHandler);
+  get closeButtonElement() {
+    if(!this.#closeButtonElement) {
+      this.#closeButtonElement = this.element.querySelector('.film-details__close-btn');
+    }
+    return this.#closeButtonElement;
   }
 
-  #CloseButtonClickHandler = (evt) => {
+  setCloseClickHandler = (callback) => {
+    this._callback.closeClick = callback;
+    this.closeButtonElement.addEventListener('click', this.#closeClickHandler);
+  }
+
+  #closeClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.CloseButtonClick();
+    this._callback.closeClick();
+  }
+
+  setActionHandler = (callback) => {
+    this._callback.action = callback;
+    this.element.querySelectorAll('button').forEach((button) => {
+      button.addEventListener('click', this.#actionClickHandler);
+    });
+  }
+
+  #actionClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.action(evt.target.dataset.actionType);
   }
 }

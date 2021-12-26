@@ -49,3 +49,40 @@ export const remove = (component) => {
   component.element.remove();
   component.removeElement();
 };
+
+export const replace = (newElement, oldElement) => {
+  if (newElement === null || oldElement === null) {
+    throw new Error('Can\'t replace unexisting elements');
+  }
+
+  const newChild = newElement instanceof AbstractView ? newElement.element : newElement;
+  const oldChild = oldElement instanceof AbstractView ? oldElement.element : oldElement;
+
+  const parent = oldChild.parentElement;
+
+  if (parent === null) {
+    throw new Error('Parent element doesn\'t exist');
+  }
+
+  parent.replaceChild(newChild, oldChild);
+};
+
+export const FilmActionType = {
+  ADD_WATCH_LIST: 'watchList',
+  MARK_WATCHED: 'watched',
+  MARK_FAVORITE: 'favorite',
+};
+
+export const FilmListNames = {
+  ALL_FILMS: 'allFilms',
+  TOP_RATED: 'topRated',
+  MOST_COMMENTED: 'mostCommented',
+};
+
+export const SortTypes = {
+  DEFAULT: 'default',
+  DATE: 'date',
+  RATING: 'rating',
+};
+
+
