@@ -14,20 +14,15 @@ const DESCRIPTION = ['Lorem ipsum dolor sit amet, consectetur adipiscing elit',
   'Nunc fermentum tortor ac porta dapibus',
   'In rutrum ac purus sit amet tempus'];
 
-function getRandomNumberInRange (min, max) {
-  return Math.random() * (max - min + 1) + min;
-}
+const getRandomNumberInRange = (min, max) => Math.random() * (max - min + 1) + min;
 
-function getRandomInteger(min, max) {
-  return Math.floor(getRandomNumberInRange(min, max));
-}
+const getRandomInteger = (min, max) => Math.floor(getRandomNumberInRange(min, max));
 
 export const getRandomFloat = (min = 0.0, max = 1.0, numberDecimals = 1) => {
   const randomValue = Math.random() * (max - min + 1) + min;
 
   return Number(randomValue.toFixed(numberDecimals));
 };
-
 
 const generateTitle = () => {
   const titles = [
@@ -81,7 +76,6 @@ const generateDuration = () => {
   return `${hour}h ${firstPartMinutes}${secondPartMinutes}m`;
 };
 
-
 const generateRandomArrayOfArray = (transmittedArray) => {
   const maxLength = 5;
   const lengthOfArray = getRandomInteger(1, maxLength);
@@ -102,7 +96,6 @@ const getRandomElementOfArray = (randomElement) => {
   const calculatedElement = randomElement[Math.floor(Math.random() * randomElement.length)];
   return calculatedElement;
 };
-
 
 const generateGenres = () => {
   const GENRES = [
