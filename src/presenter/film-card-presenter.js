@@ -1,6 +1,7 @@
 import {FilmListNames} from '../render.js';
 import FilmListView from '../view/film-list-view.js';
 import { FilmPresenter } from './film-list-presenter.js';
+import NoFilmsView from '../view/no-films-view.js';
 import {render,
   RenderPosition,
   remove,
@@ -116,7 +117,7 @@ export default class FilmCardPresenter {
   #renderFilmCard = (containerId, film) => {
     const container = this.#filmListComponent.getFilmList(containerId);
     const filmPresenter = new FilmPresenter(container, this.#handleFilmChange);
-    filmPresenter.setCardClick(() =>this.#handleCardClick(filmPresenter));
+    filmPresenter.setCardClick(() => this.#handleCardClick(filmPresenter));
     filmPresenter.setCardClose(this.#handleCardClose);
     filmPresenter.init(film);
 
@@ -124,9 +125,13 @@ export default class FilmCardPresenter {
   };
 
   #renderFilms = (containerId, films, from, to) => {
-    films
-      .slice(from, to)
-      .forEach((film) => this.#renderFilmCard(containerId, film));
+    if(films.length === 0) {
+      render(this.#container, new NoFilmsView());
+    } else {
+      films
+        .slice(from, to)
+        .forEach((film) => this.#renderFilmCard(containerId, film));
+    }
   }
 
   #renderMainFilmList = (films) => {

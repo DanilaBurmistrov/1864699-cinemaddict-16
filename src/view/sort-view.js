@@ -38,6 +38,15 @@ export default class SortView extends AbstractView {
     }
 
     evt.preventDefault();
+    this.#handleActiveClassChange(evt);
     this._callback.sortTypeChange(evt.target.dataset.sortType);
+  }
+
+  #handleActiveClassChange = (evt) => {
+    const allSortButtons = document.querySelectorAll('.sort__button');
+    allSortButtons.forEach((element) => {
+      element.classList.remove('sort__button--active');
+    });
+    evt.target.classList.add('sort__button--active');
   }
 }

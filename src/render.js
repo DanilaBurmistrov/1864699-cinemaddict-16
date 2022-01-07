@@ -67,6 +67,11 @@ export const replace = (newElement, oldElement) => {
   parent.replaceChild(newChild, oldChild);
 };
 
+export const KeysName = {
+  ESC: 'Esc',
+  ESCAPE: 'Escape',
+};
+
 export const FilmActionType = {
   ADD_WATCH_LIST: 'watchList',
   MARK_WATCHED: 'watched',

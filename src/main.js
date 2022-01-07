@@ -3,7 +3,6 @@ import FilmCardPresenter from './presenter/film-card-presenter.js';
 import {generateFilmInfo} from './mock/films-info';
 import {generateFilters} from './mock/navigation.js';
 import MenuNavigationView from './view/menu-navigation-view.js';
-import NoFilmsView from './view/no-films-view.js';
 import {render} from './render.js';
 import UserRatingView from './view/user-rating-view.js';
 
@@ -19,13 +18,9 @@ const siteFooterStatistics = siteFooter.querySelector('.footer__statistics');
 render(siteHeader, new UserRatingView());
 render(siteFooterStatistics, new FilmStatisticsView());
 
-if(films !== 'undefined' && films.length) {
-  const filters = generateFilters(films);
-  render(siteMainElement, new MenuNavigationView(filters));
+const filters = generateFilters(films);
+render(siteMainElement, new MenuNavigationView(filters));
 
-  const filmListPresenter = new FilmCardPresenter(siteMainElement);
-  filmListPresenter.init(films);
+const filmListPresenter = new FilmCardPresenter(siteMainElement);
+filmListPresenter.init(films);
 
-} else {
-  render(siteMainElement, new NoFilmsView());
-}

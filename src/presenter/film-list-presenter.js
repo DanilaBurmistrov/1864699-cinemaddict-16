@@ -1,3 +1,4 @@
+import { KeysName } from '../render.js';
 import FilmCardView from '../view/film-card-view';
 import FilmPopupView from '../view/film-popup-view';
 import {FilmActionType} from '../render.js';
@@ -70,7 +71,7 @@ removePopup() {
 }
 
 #onEscKeyDown = (evt) => {
-  if (evt.key === 'Esc' || evt.key === 'Escape') {
+  if (evt.key === KeysName.ESC || evt.key === KeysName.ESCAPE) {
     evt.preventDefault();
     this.removePopup();
   }
@@ -108,6 +109,7 @@ setCardClose = (callback) => {
       break;
 
   }
+
 }
 
 destroy = () => {
