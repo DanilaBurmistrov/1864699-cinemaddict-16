@@ -1,9 +1,6 @@
 import { FilmActionType } from '../render';
 import { getFormattedDate } from '../utils/common';
-import { generateFilmInfo } from '../mock/films-info';
 import SmartView from './smart-view';
-
-const filmInfo = generateFilmInfo();
 
 const generateGenresTemplate = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
 
@@ -35,6 +32,21 @@ const createCommentEmojiTemplate = (emoji) => emoji ? `<img src="images/emoji/${
 
 const createFilmDetailsTemplate = (film) => {
   const {
+    title,
+    director,
+    writers,
+    actors,
+    duration,
+    countries,
+    genre,
+    description,
+    rating,
+    releaseDate,
+    poster,
+    age,
+    isFavorite,
+    isWatched,
+    isInWatchList,
     comments,
     commentEmoji,
     comment,
@@ -52,71 +64,71 @@ const createFilmDetailsTemplate = (film) => {
       </div>
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
-          <img class="film-details__poster-img" src="${filmInfo.poster}" alt="">
-          <p class="film-details__age">${filmInfo.age}+</p>
+          <img class="film-details__poster-img" src="${poster}" alt="">
+          <p class="film-details__age">${age}+</p>
         </div>
         <div class="film-details__info">
           <div class="film-details__info-head">
             <div class="film-details__title-wrap">
-              <h3 class="film-details__title">${filmInfo.title}</h3>
-              <p class="film-details__title-original">Original: ${filmInfo.title}</p>
+              <h3 class="film-details__title">${title}</h3>
+              <p class="film-details__title-original">Original: ${title}</p>
             </div>
             <div class="film-details__rating">
-              <p class="film-details__total-rating">${filmInfo.rating}</p>
+              <p class="film-details__total-rating">${rating}</p>
             </div>
           </div>
           <table class="film-details__table">
             <tr class="film-details__row">
               <td class="film-details__term">Director</td>
-              <td class="film-details__cell">${filmInfo.director}</td>
+              <td class="film-details__cell">${director}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Writers</td>
-              <td class="film-details__cell">${filmInfo.writers}</td>
+              <td class="film-details__cell">${writers}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Actors</td>
-              <td class="film-details__cell">${filmInfo.actors}</td>
+              <td class="film-details__cell">${actors}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${filmInfo.releaseDate}</td>
+              <td class="film-details__cell">${releaseDate}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${filmInfo.duration}</td>
+              <td class="film-details__cell">${duration}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
-              <td class="film-details__cell">${filmInfo.countries}</td>
+              <td class="film-details__cell">${countries}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Genres</td>
-              <td class="film-details__cell">${generateGenresTemplate(filmInfo.genre)}</td>
+              <td class="film-details__cell">${generateGenresTemplate(genre)}</td>
             </tr>
           </table>
-          <p class="film-details__film-description">${filmInfo.description}</p>
+          <p class="film-details__film-description">${description}</p>
         </div>
       </div>
       <section class="film-details__controls">
         <button type="button" data-action-type="${FilmActionType.ADD_WATCH_LIST}"
                 class="film-details__control-button
                       film-details__control-button--watchlist
-                      ${activeClassName(!filmInfo.isInWatchList)}"
+                      ${activeClassName(!isInWatchList)}"
                 id="watchlist" name="watchlist">
                 Add to watchlist
         </button>
         <button type="button" data-action-type="${FilmActionType.MARK_WATCHED}"
                 class="film-details__control-button
                       film-details__control-button--watched
-                      ${activeClassName(filmInfo.isWatched)}"
+                      ${activeClassName(isWatched)}"
                 id="watched" name="watched">
                 Already watched
         </button>
         <button type="button" data-action-type="${FilmActionType.MARK_FAVORITE}"
                 class="film-details__control-button
                       film-details__control-button--favorite
-                      ${activeClassName(filmInfo.isFavorite)}"
+                      ${activeClassName(isFavorite)}"
                 id="favorite" name="favorite">
                 Add to favorites
         </button>
@@ -229,9 +241,11 @@ export default class FilmPopupView extends SmartView {
 
   #changeCommentEmoji = (evt) => {
     evt.preventDefault();
+    this.saveScrollPosition();
     this.updateData({
       commentEmoji: evt.target.value,
     });
+    this.setScrollPosition();
   }
 
   #commentInputHandler = (evt) => {
@@ -245,22 +259,6 @@ export default class FilmPopupView extends SmartView {
     this.#setInnerHandlers();
     this.setCloseClickHandler(this._callback.closeClick);
     this.setActionHandler(this._callback.action);
-  }
-
-  setNewCommentsSubmit = (callback) => {
-    this._callback.commentsSubmit = callback;
-    this.element.querySelector('.film-details__comment-input')
-      .addEventListener('keydown', this.#onEnterKeyDown);
-  }
-
-  #onEnterKeyDown = (evt) => {
-    if(evt.keyCode === 13) {
-      evt.preventDefault();
-      this.saveScrollPosition();
-      this._callback.commentsSubmit(FilmPopupView.parseDataToFilm(this._data), FilmPopupView.parseDataToFilmComments(this._commentsData, this._data));
-      this.setScrollPosition();
-
-    }
   }
 
   saveScrollPosition = () => {
