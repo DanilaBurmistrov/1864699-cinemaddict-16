@@ -24,6 +24,7 @@ const createFilmCardTemplate = (film) => {
   } = film;
 
   const activeButtonClassName = (isActive) => isActive ? 'film-card__controls-item--active' : '';
+  const isComments = comments.length ? `${comments.length  } comments` : '';
 
   return `<article class="film-card">
   <a class="film-card__link">
@@ -36,7 +37,7 @@ const createFilmCardTemplate = (film) => {
     </p>
     <img src= ${poster} alt="" class="film-card__poster">
     <p class="film-card__description">${createShortDescription(description)}</p>
-    <span class="film-card__comments">${comments.length}</span>
+    <span class="film-card__comments">${isComments}</span>
   </a>
   <div class="film-card__controls">
   <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${activeButtonClassName(!isInWatchList)}"
