@@ -1,5 +1,5 @@
 import FilmStatisticsView from './view/film-statistics-view.js';
-import FilmCardPresenter from './presenter/film-card-presenter.js';
+import FilmListPresenter from './presenter/film-list-presenter.js';
 import {generateFilmInfo} from './mock/films-info';
 import {generateFilters} from './mock/navigation.js';
 import MenuNavigationView from './view/menu-navigation-view.js';
@@ -21,6 +21,6 @@ render(siteFooterStatistics, new FilmStatisticsView());
 const filters = generateFilters(films);
 render(siteMainElement, new MenuNavigationView(filters));
 
-const filmListPresenter = new FilmCardPresenter(siteMainElement);
+const filmListPresenter = new FilmListPresenter(siteMainElement);
 filmListPresenter.init(films);
 
