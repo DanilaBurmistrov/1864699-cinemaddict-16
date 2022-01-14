@@ -13,11 +13,19 @@ const createFilmsListTemplate = (title, isExtra) => {
 export default class FilmsListView extends AbstractView {
   #title = null;
   #isExtra = false;
+  #filmsListContainer = null;
 
   constructor(title, isExtra) {
     super();
     this.#title = title;
     this.#isExtra = isExtra;
+  }
+
+  get filmsListContainer() {
+    if(!this.#filmsListContainer) {
+      this.#filmsListContainer = this.element.querySelector('.films-list__container');
+    }
+    return this.#filmsListContainer;
   }
 
   get template() {
