@@ -97,7 +97,7 @@ setCardClose = (callback) => {
 #handlerFilmAction = (type) => {
   switch (type) {
     case FilmActionType.ADD_WATCH_LIST:
-      this.#changeData({...this.#film, isWatchList: !this.#film.isWatchList});
+      this.#changeData({...this.#film, isInWatchList: !this.#film.isInWatchList});
       break;
 
     case FilmActionType.MARK_WATCHED:
