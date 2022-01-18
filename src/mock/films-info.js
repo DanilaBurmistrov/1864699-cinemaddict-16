@@ -218,7 +218,7 @@ const generateComment = () => ({
   day: generateCommentDay(),
 });
 
-const generateComments = () => {
+export const generateComments = () => {
   const commentCount = getRandomInteger(0, 5);
   return Array.from({length: commentCount}, generateComment);
 };

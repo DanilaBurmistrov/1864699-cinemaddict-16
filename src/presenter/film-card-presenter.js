@@ -1,7 +1,7 @@
 import { KeysName } from '../render.js';
 import FilmCardView from '../view/film-card-view';
 import FilmPopupView from '../view/film-popup-view';
-import {FilmActionType} from '../render.js';
+import {FilmActionType, UpdateType} from '../render.js';
 import {render,
   RenderPosition,
   remove,
@@ -10,15 +10,19 @@ import {render,
 export class FilmPresenter {
 #container = null;
 #changeData = null;
+#commentsModel;
+#changeComment = null;
 #film  = null;
 #filmCardComponent = null;
 #popupComponent = null;
 #siteFooter = document.querySelector('.footer');
 _callback = {};
 
-constructor(container, changeData) {
+constructor(container, changeData, commentsModel, changeComment) {
   this.#container = container;
   this.#changeData = changeData;
+  this.#commentsModel = commentsModel;
+  this.#changeComment = changeComment;
 }
 
 init = (film) => {
@@ -40,23 +44,25 @@ init = (film) => {
 }
 
 openPopup = () => {
+  const filmComments = this.#commentsModel.getCommentsByFilmId(this.#film.id);
   const prevPopupComponent = this.#popupComponent;
-  this.#popupComponent = new FilmPopupView(this.#film);
+  this.#popupComponent = new FilmPopupView(this.#film, filmComments);
 
   this.#popupComponent.setCloseClickHandler(this.#handleClosePopup);
   this.#popupComponent.setActionHandler(this.#handlerFilmAction);
 
-  document.addEventListener('keydown', this.#onEscKeyDown);
   document.body.classList.add('hide-overflow');
 
   render(this.#siteFooter, this.#popupComponent, RenderPosition.AFTEREND);
 
   if(prevPopupComponent === null) {
     render(this.#siteFooter, this.#popupComponent, RenderPosition.AFTEREND);
+    document.addEventListener('keydown', this.#onEscKeyDown);
     return;
   }
 
   replace(this.#popupComponent, prevPopupComponent);
+  this.#popupComponent.setScroll(prevPopupComponent.scrollOptions);
   remove(prevPopupComponent);
 }
 
@@ -97,15 +103,15 @@ setCardClose = (callback) => {
 #handlerFilmAction = (type) => {
   switch (type) {
     case FilmActionType.ADD_WATCH_LIST:
-      this.#changeData({...this.#film, isInWatchList: !this.#film.isInWatchList});
+      this.#changeData(UpdateType.MINOR,{...this.#film, isInWatchList: !this.#film.isInWatchList});
       break;
 
     case FilmActionType.MARK_WATCHED:
-      this.#changeData({...this.#film, isWatched: !this.#film.isWatched});
+      this.#changeData(UpdateType.MINOR,{...this.#film, isWatched: !this.#film.isWatched});
       break;
 
     case FilmActionType.MARK_FAVORITE:
-      this.#changeData({...this.#film, isFavorite: !this.#film.isFavorite});
+      this.#changeData(UpdateType.MINOR,{...this.#film, isFavorite: !this.#film.isFavorite});
       break;
 
   }
@@ -113,6 +119,9 @@ setCardClose = (callback) => {
 }
 
 destroy = () => {
+  if(this.#popupComponent){
+    this.#popupComponent.saveScroll();
+  }
   remove(this.#filmCardComponent);
 }
 
