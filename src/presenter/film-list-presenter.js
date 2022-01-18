@@ -6,8 +6,7 @@ import NoFilmsView from '../view/no-films-view.js';
 import {
   render,
   RenderPosition,
-  remove,
-  replace
+  remove
 } from '../render.js';
 import { SortTypes } from '../render.js';
 import ShowButtonView from '../view/show-button-view.js';
@@ -26,7 +25,7 @@ const FILMS_EXTRA_COUNT = 2;
 export default class FilmListPresenter {
   #container = null;
 
-  #filmsListComponent = new FilmListView();
+  #filmsListComponent = null;
   #filmsComponent = new FilmsView();
   #filmsExtraTopRatedComponent = new FilmsExtraTopRatedView();
   #filmsExtraMostCommentedComponent = new FilmsExtraMostCommentedView();
@@ -72,18 +71,9 @@ export default class FilmListPresenter {
       return;
     }
 
-    this.#reRenderSort(sortType);
-
     this.#sortFilmList(sortType);
     this.#clearFilmList();
     this.#renderFilmsList(this.#filmsList);
-  }
-
-  #reRenderSort = (sortType) => {
-    const updatedSortComponent = new SortView(sortType);
-    replace(updatedSortComponent, this.#sortComponent);
-    updatedSortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
-    this.#sortComponent = updatedSortComponent;
   }
 
   #renderSort = () => {
@@ -144,11 +134,12 @@ export default class FilmListPresenter {
 
   #renderPagedFilms = (container, cardType, from, to) => {
 
-    this.#renderFilms(container, this.#sourceFilmList.slice(from, to), cardType);
+    this.#renderFilms(container, this.#filmsList.slice(from, to), cardType);
   }
 
   #renderFilmsList = (films) => {
-    render(this.#filmsComponent, this.#filmsListComponent);
+    this.#filmsListComponent = new FilmListView();
+    render(this.#filmsComponent, this.#filmsListComponent, RenderPosition.AFTERBEGIN);
 
     const from = 0;
     const to = Math.min(films.length, FILM_COUNT_PER_STEP);
@@ -204,5 +195,6 @@ export default class FilmListPresenter {
     this.#filmPresenter.forEach((presenter) => presenter.destroy());
     this.#filmPresenter.clear();
     this.#renderedFilmCount = FILM_COUNT_PER_STEP;
+    remove(this.#filmsListComponent);
   }
 }
