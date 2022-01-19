@@ -1,33 +1,50 @@
 import AbstractView from './abstract-view';
 import { FilmActionType } from '../render';
-import { generateFilmInfo } from '../mock/films-info';
 
+const SHORT_DESCRIPTION_NUMBER_OF_SYMBOLS = 140;
 
-const createFilmCardTemplate = () => {
+const createShortDescription = (description) => {
+  const isShort = Boolean(description.length <= SHORT_DESCRIPTION_NUMBER_OF_SYMBOLS);
+  return `<p class="film-card__description">${isShort ? description : `${description.slice(0, 139)  }...`}</p>`;
+};
 
-  const filmInfo = generateFilmInfo();
+const createFilmCardTemplate = (film) => {
+  const {
+    title,
+    rating,
+    releaseDate,
+    duration,
+    genre,
+    poster,
+    description,
+    comments,
+    isInWatchList,
+    isWatched,
+    isFavorite,
+  } = film;
 
   const activeButtonClassName = (isActive) => isActive ? 'film-card__controls-item--active' : '';
+  const isComments = comments.length ? `${comments.length  } comments` : '';
 
   return `<article class="film-card">
   <a class="film-card__link">
-    <h3 class="film-card__title">${filmInfo.title}</h3>
-    <p class="film-card__rating">${filmInfo.rating}</p>
+    <h3 class="film-card__title">${title}</h3>
+    <p class="film-card__rating">${rating}</p>
     <p class="film-card__info">
-      <span class="film-card__year">${filmInfo.releaseDate}</span>
-      <span class="film-card__duration">${filmInfo.duration}</span>
-      <span class="film-card__genre">${filmInfo.genre[0]}</span>
+      <span class="film-card__year">${releaseDate}</span>
+      <span class="film-card__duration">${duration}</span>
+      <span class="film-card__genre">${genre[0]}</span>
     </p>
-    <img src= ${filmInfo.poster} alt="" class="film-card__poster">
-    <p class="film-card__description">${filmInfo.description}</p>
-    <span class="film-card__comments">${filmInfo.comments.length}</span>
+    <img src= ${poster} alt="" class="film-card__poster">
+    <p class="film-card__description">${createShortDescription(description)}</p>
+    <span class="film-card__comments">${isComments}</span>
   </a>
   <div class="film-card__controls">
-  <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${activeButtonClassName(!filmInfo.isInWatchList)}"
+  <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${activeButtonClassName(!isInWatchList)}"
   data-action-type="${FilmActionType.ADD_WATCH_LIST}" type="button">Add to watchlist</button>
-<button class="film-card__controls-item film-card__controls-item--mark-as-watched ${activeButtonClassName(filmInfo.isWatched)}"
+<button class="film-card__controls-item film-card__controls-item--mark-as-watched ${activeButtonClassName(isWatched)}"
   data-action-type="${FilmActionType.MARK_WATCHED}" type="button">Mark as watched</button>
-<button class="film-card__controls-item film-card__controls-item--favorite ${activeButtonClassName(filmInfo.isFavorite)}"
+<button class="film-card__controls-item film-card__controls-item--favorite ${activeButtonClassName(isFavorite)}"
   data-action-type="${FilmActionType.MARK_FAVORITE}" type="button">Mark as favorite</button>
   </div>
 </article>`;
@@ -36,9 +53,6 @@ const createFilmCardTemplate = () => {
 export default class FilmCardView extends AbstractView {
   #film = null;
   #cardLinkElement = null;
-  #cardWatchListElement = null;
-  #cardWatchedElement = null;
-  #cardFavoriteElement = null;
 
   constructor(film) {
     super();
