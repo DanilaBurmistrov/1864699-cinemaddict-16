@@ -30,7 +30,7 @@ export default class FilmListPresenter {
   #filterModel = null;
   #commentsModel = null;
 
-  #filmsListComponent = new FilmListView();
+  #filmsListComponent = null;
   #filmsComponent = new FilmsView();
   #filmsExtraTopRatedComponent = new FilmsExtraTopRatedView();
   #filmsExtraMostCommentedComponent = new FilmsExtraMostCommentedView();
@@ -195,7 +195,8 @@ export default class FilmListPresenter {
   }
 
   #renderFilmsList = (films) => {
-    render(this.#filmsComponent, this.#filmsListComponent);
+    this.#filmsListComponent = new FilmListView();
+    render(this.#filmsComponent, this.#filmsListComponent, RenderPosition.AFTERBEGIN);
 
     const filmsCount = this.filmsList.length;
     const from = 0;
