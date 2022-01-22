@@ -1,4 +1,4 @@
-import { FilmActionType } from '../render';
+import { FilmActionType, UserAction } from '../render';
 import { getFormattedDate } from '../utils/common';
 import SmartView from './smart-view';
 
@@ -114,7 +114,7 @@ const createFilmDetailsTemplate = (film) => {
         <button type="button" data-action-type="${FilmActionType.ADD_WATCH_LIST}"
                 class="film-details__control-button
                       film-details__control-button--watchlist
-                      ${activeClassName(!isInWatchList)}"
+                      ${activeClassName(isInWatchList)}"
                 id="watchlist" name="watchlist">
                 Add to watchlist
         </button>
@@ -174,11 +174,13 @@ export default class FilmPopupView extends SmartView {
   _scrollPosition = 0;
   #elementScroll;
   #newElementScroll;
+  #comments = [];
 
-  constructor(film) {
+  constructor(film, comments) {
     super();
 
     this._data = FilmPopupView.parseFilmToData(film);
+    this.#comments = comments;
 
     this.#setInnerHandlers();
   }
@@ -211,6 +213,35 @@ export default class FilmPopupView extends SmartView {
   #actionClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.action(evt.target.dataset.actionType);
+  }
+
+  setCommentActionHandler = (callback) => {
+    this._callback.commentAction = callback;
+
+    this.element.querySelectorAll('.film-details__comment-delete').forEach((button) => {
+      button.addEventListener('click', this.#deleteCommentHandler);
+    });
+  }
+
+  #deleteCommentHandler = (evt) => {
+    evt.preventDefault();
+    const  commentId = evt.target.dataset.commentId;
+    const index = this.#comments.findIndex((comment) => comment.id === commentId);
+
+    if (index === -1) {
+      throw new Error('Can\'t delete unexisting comment');
+    }
+    this._callback.commentAction(UserAction.DELETE_COMMENT, this.#comments[index]);
+  }
+
+  addCommentHandler = () => {
+    const newComment = {
+      idFilm: this._data.id,
+      emoji: this._data.commentEmoji ? `./images/emoji/${this._data.commentEmoji}.png` : null,
+      text: this._data.comment
+    };
+
+    this._callback.commentAction(UserAction.ADD_COMMENT, newComment);
   }
 
   static parseFilmToData = (film) => ({...film,
@@ -259,6 +290,7 @@ export default class FilmPopupView extends SmartView {
     this.#setInnerHandlers();
     this.setCloseClickHandler(this._callback.closeClick);
     this.setActionHandler(this._callback.action);
+    this.setCommentActionHandler(this._callback.commentAction);
   }
 
   saveScrollPosition = () => {
@@ -269,36 +301,6 @@ export default class FilmPopupView extends SmartView {
   setScrollPosition = () => {
     this.#newElementScroll = document.querySelector('.film-details');
     this.#newElementScroll.scrollTop = this._scrollPosition;
-  }
-
-  setFavoriteClickHandler = (callback) => {
-    this._callback.favoriteClick = callback;
-    this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#favoriteClickHandler);
-  }
-
-  setWatchedClickHandler = (callback) => {
-    this._callback.watchedClick = callback;
-    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#watchedClickHandler);
-  }
-
-  setWatchlistClickHandler = (callback) => {
-    this._callback.watchlistClick = callback;
-    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#watchlistClickHandler);
-  }
-
-  #favoriteClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.favoriteClick();
-  }
-
-  #watchlistClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.watchlistClick();
-  }
-
-  #watchedClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.watchedClick();
   }
 
 }

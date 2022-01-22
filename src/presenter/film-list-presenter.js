@@ -1,4 +1,3 @@
-import { CommentAction } from '../render.js';
 import { FilmListNames } from '../render.js';
 import FilmListView from '../view/film-list-view.js';
 import { FilmPresenter } from './film-card-presenter.js';
@@ -20,6 +19,7 @@ import {
 } from '../utils/film-sort.js';
 import FilmsExtraTopRatedView from '../view/film-extra-top-rated-view.js';
 import FilmsExtraMostCommentedView from '../view/film-extra-most-commented-view.js';
+import { UserAction } from '../render.js';
 
 const FILM_COUNT_PER_STEP = 5;
 const FILMS_EXTRA_COUNT = 2;
@@ -92,8 +92,8 @@ export default class FilmListPresenter {
     this.#filterModel.removeObserver(this.#handleModelEvent);
   }
 
-  #handleModelEvent = (UpdateType, data) => {
-    switch (UpdateType) {
+  #handleModelEvent = (updateType, data) => {
+    switch (updateType) {
       case 'PATCH':
         this.#filmPresenter.get(data.id).init(data);
         break;
@@ -108,9 +108,9 @@ export default class FilmListPresenter {
     }
   }
 
-  #handleCommentEvent = (UpdateType, data) => {
+  #handleCommentEvent = (updateType, data) => {
     this.#filmsModel.reloadComments(data.idFilm);
-    this.#handleModelEvent(UpdateType, this.#filmsModel.getFilmById(data.idFilm));
+    this.#handleModelEvent(updateType, this.#filmsModel.getFilmById(data.idFilm));
   }
 
   #handleSortTypeChange = (sortType) => {
@@ -129,17 +129,17 @@ export default class FilmListPresenter {
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   }
 
-  #handleFilmChange = (UpdateType, updatedFilm) => {
-    this.#filmsModel.updateFilm(UpdateType, updatedFilm);
+  #handleFilmChange = (updateType, updatedFilm) => {
+    this.#filmsModel.updateFilm(updateType, updatedFilm);
   }
 
-  #handleCommentChange = (actionType, UpdateType, update) => {
+  #handleCommentChange = (actionType, updateType, update) => {
     switch (actionType) {
-      case CommentAction.DELETE:
-        this.#commentsModel.deleteComment(UpdateType, update);
+      case UserAction.DELETE_COMMENT:
+        this.#commentsModel.deleteComment(updateType, update);
         break;
-      case CommentAction.ADD:
-        this.#commentsModel.addComment(UpdateType, update);
+      case UserAction.ADD_COMMENT:
+        this.#commentsModel.addComment(updateType, update);
         break;
     }
   }
