@@ -100,7 +100,7 @@ export const FilterType = {
 };
 
 export const filter = {
-  [FilterType.ALL]: (filmsList) => filmsList,
+  [FilterType.ALL]: (filmsList) => [...filmsList],
   [FilterType.WATCH_LIST]: (filmsList) => filmsList.filter((film) => film.isInWatchList),
   [FilterType.WATCHED]: (filmsList) => filmsList.filter((film) => film.isWatched),
   [FilterType.FAVORITES]: (filmsList) => filmsList.filter((film) => film.isFavorite),
@@ -118,7 +118,7 @@ export const UpdateType = {
 };
 
 export const UserAction = {
-  UPDATE_TASK: 'UPDATE_TASK',
-  ADD_TASK: 'ADD_TASK',
-  DELETE_TASK: 'DELETE_TASK',
+  UPDATE_CARD: 'UPDATE_CARD',
+  ADD_COMMENT: 'ADD_COMMENT',
+  DELETE_COMMENT: 'DELETE_COMMENT',
 };

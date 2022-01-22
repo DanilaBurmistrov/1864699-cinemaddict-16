@@ -31,7 +31,7 @@ const filterModel = new FilterModel();
 
 const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel);
 
-const filmListPresenter = new FilmListPresenter(siteMainElement, filmsModel, commentsModel);
+const filmListPresenter = new FilmListPresenter(siteMainElement, filmsModel, commentsModel, filterModel);
 
 filterPresenter.init();
 filmListPresenter.init();

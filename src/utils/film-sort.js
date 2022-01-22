@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 
 export const sortRatingDown = (prev, next) =>
-  prev.rating - next.rating;
+  next.rating - prev.rating;
 
 export const sortCommentCountDown = (prev, next) =>
   prev.comments.length - next.comments.length;

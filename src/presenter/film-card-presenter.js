@@ -62,7 +62,6 @@ openPopup = () => {
   }
 
   replace(this.#popupComponent, prevPopupComponent);
-  this.#popupComponent.setScroll(prevPopupComponent.scrollOptions);
   remove(prevPopupComponent);
 }
 
@@ -103,15 +102,15 @@ setCardClose = (callback) => {
 #handlerFilmAction = (type) => {
   switch (type) {
     case FilmActionType.ADD_WATCH_LIST:
-      this.#changeData(UpdateType.MINOR,{...this.#film, isInWatchList: !this.#film.isInWatchList});
+      this.#changeData(UpdateType.MINOR, {...this.#film, isInWatchList: !this.#film.isInWatchList});
       break;
 
     case FilmActionType.MARK_WATCHED:
-      this.#changeData(UpdateType.MINOR,{...this.#film, isWatched: !this.#film.isWatched});
+      this.#changeData(UpdateType.MINOR, {...this.#film, isWatched: !this.#film.isWatched});
       break;
 
     case FilmActionType.MARK_FAVORITE:
-      this.#changeData(UpdateType.MINOR,{...this.#film, isFavorite: !this.#film.isFavorite});
+      this.#changeData(UpdateType.MINOR, {...this.#film, isFavorite: !this.#film.isFavorite});
       break;
 
   }

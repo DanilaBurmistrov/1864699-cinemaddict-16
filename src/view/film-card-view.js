@@ -40,7 +40,7 @@ const createFilmCardTemplate = (film) => {
     <span class="film-card__comments">${isComments}</span>
   </a>
   <div class="film-card__controls">
-  <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${activeButtonClassName(!isInWatchList)}"
+  <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${activeButtonClassName(isInWatchList)}"
   data-action-type="${FilmActionType.ADD_WATCH_LIST}" type="button">Add to watchlist</button>
 <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${activeButtonClassName(isWatched)}"
   data-action-type="${FilmActionType.MARK_WATCHED}" type="button">Mark as watched</button>

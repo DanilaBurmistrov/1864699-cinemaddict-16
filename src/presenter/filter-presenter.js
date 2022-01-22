@@ -1,5 +1,5 @@
 import MenuFilterView from '../view/menu-filter-view.js';
-import {render, replace, remove, RenderPosition} from '../render.js';
+import {render, replace, remove} from '../render.js';
 import { filter } from '../render.js';
 import {FilterType, UpdateType} from '../render.js';
 
@@ -14,9 +14,6 @@ export default class FilterPresenter {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
     this.#filmsModel = filmsModel;
-
-    this.#filmsModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get filters() {
@@ -53,8 +50,11 @@ export default class FilterPresenter {
     this.#filterComponent = new MenuFilterView(filters, this.#filterModel.filter);
     this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
 
+    this.#filmsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
+
     if (prevFilterComponent === null) {
-      render(this.#filterContainer, this.#filterComponent, RenderPosition.BEFOREEND);
+      render(this.#filterContainer, this.#filterComponent);
       return;
     }
 

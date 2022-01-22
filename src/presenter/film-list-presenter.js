@@ -37,11 +37,11 @@ export default class FilmListPresenter {
   #sortComponent = new SortView();
   #showMoreComponent = new ShowButtonView();
   #noFilmsComponent = null;
+  #filmIdWithOpenPopup = null;
 
   #renderedFilmCount = FILM_COUNT_PER_STEP;
   #filmPresenter = new Map();
   #filmPresenterWithPopup = null;
-  #filmIdWithOpenPopup = null;
   #currentSortType = SortTypes.DEFAULT;
   #filterType = FilterType.ALL;
 
@@ -52,13 +52,11 @@ export default class FilmListPresenter {
     this.#filterModel = filterModel;
 
     this.#filmsModel.addObserver(this.#handleModelEvent);
-    /// если раскомментить, то будет ошибка
-    // this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get filmsList() {
-    /// если раскомментить, то будет ошибка
-    // this.#filterType = this.#filterModel.filter;
+    this.#filterType = this.#filterModel.filter;
     const filmsList = this.#filmsModel.filmsList;
     const filteredFilmsList = filter[this.#filterType](filmsList);
 
@@ -77,8 +75,7 @@ export default class FilmListPresenter {
     render(this.#container, this.#filmsListComponent);
     this.#filmsModel.addObserver(this.#handleModelEvent);
     this.#commentsModel.addObserver(this.#handleCommentEvent);
-    /// если раскомментить, то будет ошибка
-    // this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
 
     this.#renderMainContainer();
   }
@@ -95,25 +92,25 @@ export default class FilmListPresenter {
     this.#filterModel.removeObserver(this.#handleModelEvent);
   }
 
-  #handleModelEvent = (updateType, data) => {
-    switch (updateType) {
-      case updateType.PATCH:
+  #handleModelEvent = (UpdateType, data) => {
+    switch (UpdateType) {
+      case 'PATCH':
         this.#filmPresenter.get(data.id).init(data);
         break;
-      case updateType.MINOR:
+      case 'MINOR':
         this.#clearMainContainer();
         this.#renderMainContainer();
         break;
-      case updateType.MAJOR:
+      case 'MAJOR':
         this.#clearMainContainer({resetRenderedFilmCount: true, resetSortType: true});
         this.#renderMainContainer();
         break;
     }
   }
 
-  #handleCommentEvent = (updateType, data) => {
+  #handleCommentEvent = (UpdateType, data) => {
     this.#filmsModel.reloadComments(data.idFilm);
-    this.#handleModelEvent(updateType, this.#filmsModel.getFilmById(data.idFilm));
+    this.#handleModelEvent(UpdateType, this.#filmsModel.getFilmById(data.idFilm));
   }
 
   #handleSortTypeChange = (sortType) => {
@@ -128,23 +125,21 @@ export default class FilmListPresenter {
   }
 
   #renderSort = () => {
-    this.#sortComponent = new SortView(this.#currentSortType);
+    render(this.#container, this.#sortComponent);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
-
-    render(this.#filmsListComponent, this.#sortComponent, RenderPosition.BEFOREBEGIN);
   }
 
-  #handleFilmChange = (updateType, updatedFilm) => {
-    this.#filmsModel.updateFilm(updateType, updatedFilm);
+  #handleFilmChange = (UpdateType, updatedFilm) => {
+    this.#filmsModel.updateFilm(UpdateType, updatedFilm);
   }
 
-  #handleCommentChange = (actionType, updateType, update) => {
+  #handleCommentChange = (actionType, UpdateType, update) => {
     switch (actionType) {
       case CommentAction.DELETE:
-        this.#commentsModel.deleteComment(updateType, update);
+        this.#commentsModel.deleteComment(UpdateType, update);
         break;
       case CommentAction.ADD:
-        this.#commentsModel.addComment(updateType, update);
+        this.#commentsModel.addComment(UpdateType, update);
         break;
     }
   }
