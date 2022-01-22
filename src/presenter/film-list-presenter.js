@@ -19,7 +19,7 @@ import {
 } from '../utils/film-sort.js';
 import FilmsExtraTopRatedView from '../view/film-extra-top-rated-view.js';
 import FilmsExtraMostCommentedView from '../view/film-extra-most-commented-view.js';
-import { UserAction } from '../render.js';
+import { CommentAction } from '../render.js';
 
 const FILM_COUNT_PER_STEP = 5;
 const FILMS_EXTRA_COUNT = 2;
@@ -135,10 +135,10 @@ export default class FilmListPresenter {
 
   #handleCommentChange = (actionType, updateType, update) => {
     switch (actionType) {
-      case UserAction.DELETE_COMMENT:
+      case CommentAction.DELETE:
         this.#commentsModel.deleteComment(updateType, update);
         break;
-      case UserAction.ADD_COMMENT:
+      case CommentAction.ADD:
         this.#commentsModel.addComment(updateType, update);
         break;
     }

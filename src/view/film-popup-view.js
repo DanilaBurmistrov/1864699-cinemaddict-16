@@ -1,4 +1,4 @@
-import { FilmActionType, UserAction } from '../render';
+import { FilmActionType, CommentAction } from '../render';
 import { getFormattedDate } from '../utils/common';
 import SmartView from './smart-view';
 
@@ -231,7 +231,7 @@ export default class FilmPopupView extends SmartView {
     if (index === -1) {
       throw new Error('Can\'t delete unexisting comment');
     }
-    this._callback.commentAction(UserAction.DELETE_COMMENT, this.#comments[index]);
+    this._callback.commentAction(CommentAction.DELETE, this.#comments[index]);
   }
 
   addCommentHandler = () => {
@@ -241,7 +241,7 @@ export default class FilmPopupView extends SmartView {
       text: this._data.comment
     };
 
-    this._callback.commentAction(UserAction.ADD_COMMENT, newComment);
+    this._callback.commentAction(CommentAction.ADD, newComment);
   }
 
   static parseFilmToData = (film) => ({...film,

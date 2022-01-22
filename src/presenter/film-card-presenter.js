@@ -6,7 +6,6 @@ import {render,
   RenderPosition,
   remove,
   replace} from '../render.js';
-import { UserAction } from '../render.js';
 
 export class FilmPresenter {
 #container = null;
@@ -104,19 +103,16 @@ setCardClose = (callback) => {
   switch (type) {
     case FilmActionType.ADD_WATCH_LIST:
       this.#changeData(
-        UserAction.UPDATE_CARD,
         UpdateType.MINOR, {...this.#film, isInWatchList: !this.#film.isInWatchList});
       break;
 
     case FilmActionType.MARK_WATCHED:
       this.#changeData(
-        UserAction.UPDATE_CARD,
         UpdateType.MINOR, {...this.#film, isWatched: !this.#film.isWatched});
       break;
 
     case FilmActionType.MARK_FAVORITE:
       this.#changeData(
-        UserAction.UPDATE_CARD,
         UpdateType.MINOR, {...this.#film, isFavorite: !this.#film.isFavorite});
       break;
 
