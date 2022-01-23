@@ -50,6 +50,7 @@ openPopup = () => {
 
   this.#popupComponent.setCloseClickHandler(this.#handleClosePopup);
   this.#popupComponent.setActionHandler(this.#handlerFilmAction);
+  this.#popupComponent.setCommentActionHandler(this.#handlerCommentAction);
 
   document.body.classList.add('hide-overflow');
 
@@ -58,6 +59,7 @@ openPopup = () => {
   if(prevPopupComponent === null) {
     render(this.#siteFooter, this.#popupComponent, RenderPosition.AFTEREND);
     document.addEventListener('keydown', this.#onEscKeyDown);
+    document.addEventListener('keydown', this.#ctrEnterDownHandler);
     return;
   }
 
@@ -67,6 +69,7 @@ openPopup = () => {
 
 removePopup() {
   document.removeEventListener('keydown', this.#onEscKeyDown);
+  document.removeEventListener('keydown', this.#ctrEnterDownHandler);
   document.body.classList.remove('hide-overflow');
 
   if(this.#popupComponent !== null) {
@@ -79,6 +82,13 @@ removePopup() {
   if (evt.key === KeysName.ESC || evt.key === KeysName.ESCAPE) {
     evt.preventDefault();
     this.removePopup();
+  }
+}
+
+#ctrEnterDownHandler = (evt) => {
+  if (evt.key === KeysName.ENTER || evt.key === KeysName.CTRL) {
+    evt.preventDefault(evt);
+    this.#popupComponent.addCommentHandler();
   }
 }
 
@@ -118,6 +128,10 @@ setCardClose = (callback) => {
 
   }
 
+}
+
+#handlerCommentAction = (type, comment ) => {
+  this.#changeComment(type, UpdateType.MINOR, comment);
 }
 
 destroy = () => {
