@@ -17,7 +17,7 @@ export default class FilterPresenter {
   }
 
   get filters() {
-    const filmsList = this.#filmsModel.filmsList;
+    const {filmsList} = this.#filmsModel;
 
     return [
       {

@@ -9,6 +9,14 @@ export const createMostCommentedTemplate = () => (
 );
 
 export default class FilmsExtraMostCommentedView extends AbstractView {
+  #filmsExtraMostCommentedContainer = null;
+
+  get filmsExtraMostCommentedContainer() {
+    if(!this.#filmsExtraMostCommentedContainer) {
+      this.#filmsExtraMostCommentedContainer = this.element.querySelector('.films-list__container');
+    }
+    return this.#filmsExtraMostCommentedContainer;
+  }
 
   get template() {
     return createMostCommentedTemplate();
