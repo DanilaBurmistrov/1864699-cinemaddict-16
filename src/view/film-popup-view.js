@@ -1,5 +1,6 @@
-import { FilmActionType, CommentAction } from '../render';
-import { getFormattedDate } from '../utils/common';
+import he from 'he';
+import { FilmActionType, CommentAction } from '../constants';
+import { getFormattedDate, getTimeOutOfMinutes } from '../utils/common';
 import SmartView from './smart-view';
 
 const generateGenresTemplate = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
@@ -38,7 +39,7 @@ const createFilmDetailsTemplate = (film) => {
     actors,
     duration,
     countries,
-    genre,
+    genres,
     description,
     rating,
     releaseDate,
@@ -96,7 +97,7 @@ const createFilmDetailsTemplate = (film) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${duration}</td>
+              <td class="film-details__cell">${getTimeOutOfMinutes(duration)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
@@ -104,7 +105,7 @@ const createFilmDetailsTemplate = (film) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Genres</td>
-              <td class="film-details__cell">${generateGenresTemplate(genre)}</td>
+              <td class="film-details__cell">${generateGenresTemplate(genres)}</td>
             </tr>
           </table>
           <p class="film-details__film-description">${description}</p>
@@ -143,7 +144,7 @@ const createFilmDetailsTemplate = (film) => {
         <div class="film-details__new-comment">
           <div class="film-details__add-emoji-label">${createCommentEmojiTemplate(commentEmoji)}</div>
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${comment}</textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${he.encode(comment)}</textarea>
           </label>
           <div class="film-details__emoji-list">
               <input class="film-details__emoji-item visually-hidden" name="comment-emoji" ${checkedEmoji('smile')} type="radio" id="emoji-smile" value="smile">

@@ -1,15 +1,15 @@
 import FilmListView from '../view/film-list-view.js';
 import { FilmPresenter } from './film-card-presenter.js';
 import FilmsView from '../view/films-view.js';
-import { filter } from '../render.js';
-import { FilterType } from '../render.js';
+import { filter } from '../constants';
+import { FilterType } from '../constants';
 import NoFilmsView from '../view/no-films-view.js';
 import {
   render,
   RenderPosition,
   remove
 } from '../render.js';
-import { SortTypes } from '../render.js';
+import { SortTypes } from '../constants';
 import ShowButtonView from '../view/show-button-view.js';
 import SortView from '../view/sort-view.js';
 import {
@@ -18,8 +18,8 @@ import {
 } from '../utils/film-sort.js';
 import FilmsExtraTopRatedView from '../view/film-extra-top-rated-view.js';
 import FilmsExtraMostCommentedView from '../view/film-extra-most-commented-view.js';
-import { CommentAction } from '../render.js';
-import { UpdateType } from '../render.js';
+import { CommentAction } from '../constants';
+import { UpdateType } from '../constants';
 
 const FILM_COUNT_PER_STEP = 5;
 const FILMS_EXTRA_COUNT = 2;
@@ -88,7 +88,7 @@ export default class FilmListPresenter {
     this.#commentsModel.addObserver(this.#handleCommentEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
 
-    this.#renderMainContainer();
+    this.#renderMainContainer({resetRenderedFilmCount: true, resetSortType: true});
 
     this.#renderMostCommentedFilms();
     this.#renderTopRatedFilms();
@@ -184,7 +184,7 @@ export default class FilmListPresenter {
 
   #renderFilmCard = (container, film, filmsPresenter) => {
     const filmPresenter = new FilmPresenter(container, this.#handleFilmChange, this.#commentsModel, this.#handleCommentChange);
-    filmPresenter.setCardClick(() => this.#handleCardClick(filmPresenter, film));
+    filmPresenter.setCardClick(() => this.#handleCardClick(filmPresenter, film.id));
     filmPresenter.setCardClose(this.#handleCardClose);
     filmPresenter.init(film);
 
@@ -229,7 +229,7 @@ export default class FilmListPresenter {
   }
 
   #renderMoreButton = () => {
-    render(this.#filmsListComponent.element, this.#showMoreComponent, RenderPosition.AFTEREND);
+    render(this.#filmsListComponent.element, this.#showMoreComponent, RenderPosition.BEFOREEND);
     this.#showMoreComponent.setClickHandler(this.#handleMoreButtonClick);
   }
 

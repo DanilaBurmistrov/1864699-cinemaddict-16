@@ -24,6 +24,8 @@ export const getRandomFloat = (min = 0.0, max = 1.0, numberDecimals = 1) => {
   return Number(randomValue.toFixed(numberDecimals));
 };
 
+export const getRandomBoolean = () => Boolean(getRandomInteger(0, 1));
+
 const generateTitle = () => {
   const titles = [
     'made for each other',
@@ -69,11 +71,10 @@ const generateDate = () => {
 };
 
 const generateDuration = () => {
-  const hour = getRandomInteger(1, 4);
-  const firstPartMinutes = getRandomInteger(0, 5);
-  const secondPartMinutes = getRandomInteger(0, 9);
-
-  return `${hour}h ${firstPartMinutes}${secondPartMinutes}m`;
+  const MIN_TIME_IN_MINUTES = 30;
+  const MAX_TIME_IN_MINUTES = 180;
+  const totalMinutes = getRandomInteger(MIN_TIME_IN_MINUTES, MAX_TIME_IN_MINUTES);
+  return totalMinutes;
 };
 
 const generateRandomArrayOfArray = (transmittedArray) => {
@@ -225,23 +226,37 @@ export const generateComments = () => {
 
 const generateYear = () => getRandomInteger(1950, 2021);
 
-export const generateFilmInfo = () => ({
-  id: nanoid(),
-  director: generateDirector(),
-  writers: generateWriters(),
-  actors: generateActors(),
-  countries: generateCountry(),
-  poster: generatePoster(),
-  title: generateTitle(),
-  rating: generateRaiting(),
-  releaseDate: generateDate(),
-  duration: generateDuration(),
-  genre: generateGenres(),
-  description: generateRandomArrayOfArray(DESCRIPTION),
-  age: generateAge(),
-  isWatched: Boolean(getRandomInteger(0,1)),
-  isFavorite: Boolean(getRandomInteger(0,1)),
-  isInWatchList: Boolean(getRandomInteger(0,1)),
-  comments: generateComments(),
-  year: generateYear(),
-});
+const generateWatchingDate = (isWatched = true) => {
+  if(isWatched) {
+    const MAX_WATCHING_DAYS_GAP = 20;
+    const daysGap = getRandomInteger(-MAX_WATCHING_DAYS_GAP, 0);
+
+    return dayjs().add(daysGap, 'day');
+  }
+  return null;
+};
+
+export const generateFilmInfo = () => {
+  const isWatched = getRandomBoolean();
+  return {
+    id: nanoid(),
+    director: generateDirector(),
+    writers: generateWriters(),
+    actors: generateActors(),
+    countries: generateCountry(),
+    poster: generatePoster(),
+    title: generateTitle(),
+    rating: generateRaiting(),
+    releaseDate: generateDate(),
+    duration: generateDuration(),
+    genres: generateGenres(),
+    description: generateRandomArrayOfArray(DESCRIPTION),
+    age: generateAge(),
+    isWatched: Boolean(getRandomInteger(0,1)),
+    isFavorite: Boolean(getRandomInteger(0,1)),
+    isInWatchList: Boolean(getRandomInteger(0,1)),
+    comments: generateComments(),
+    year: generateYear(),
+    watchingDate:  generateWatchingDate(isWatched),
+  };
+};

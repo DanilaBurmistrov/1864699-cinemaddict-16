@@ -1,12 +1,7 @@
 import AbstractView from './abstract-view';
-import { FilmActionType } from '../render';
-
-const SHORT_DESCRIPTION_NUMBER_OF_SYMBOLS = 140;
-
-const createShortDescription = (description) => {
-  const isShort = Boolean(description.length <= SHORT_DESCRIPTION_NUMBER_OF_SYMBOLS);
-  return `<p class="film-card__description">${isShort ? description : `${description.slice(0, 139)  }...`}</p>`;
-};
+import { FilmActionType } from '../constants';
+import { SHORT_DESCRIPTION_NUMBER_OF_SYMBOLS } from '../constants';
+import { truncateText, getTimeOutOfMinutes } from '../utils/common';
 
 const createFilmCardTemplate = (film) => {
   const {
@@ -14,7 +9,7 @@ const createFilmCardTemplate = (film) => {
     rating,
     releaseDate,
     duration,
-    genre,
+    genres,
     poster,
     description,
     comments,
@@ -32,11 +27,11 @@ const createFilmCardTemplate = (film) => {
     <p class="film-card__rating">${rating}</p>
     <p class="film-card__info">
       <span class="film-card__year">${releaseDate}</span>
-      <span class="film-card__duration">${duration}</span>
-      <span class="film-card__genre">${genre[0]}</span>
+      <span class="film-card__duration">${getTimeOutOfMinutes(duration)}</span>
+      <span class="film-card__genre">${genres[0]}</span>
     </p>
     <img src= ${poster} alt="" class="film-card__poster">
-    <p class="film-card__description">${createShortDescription(description)}</p>
+    <p class="film-card__description">${truncateText(description, SHORT_DESCRIPTION_NUMBER_OF_SYMBOLS)}</p>
     <span class="film-card__comments">${isComments}</span>
   </a>
   <div class="film-card__controls">

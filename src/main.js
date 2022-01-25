@@ -4,9 +4,11 @@ import FilmListPresenter from './presenter/film-list-presenter.js';
 import FilmsModel from './model/films-model.js';
 import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
+import { MenuItem } from './constants.js';
 import {generateFilmInfo} from './mock/films-info';
 import { generateComments } from './mock/films-info';
-import {render} from './render.js';
+import {render, remove} from './render.js';
+import StatisticsView from './view/statistics-view.js';
 import UserRatingView from './view/user-rating-view.js';
 
 const CARD_COUNT = 15;
@@ -18,20 +20,38 @@ const siteMainElement = document.querySelector('.main');
 const siteFooter = document.querySelector('.footer');
 const siteFooterStatistics = siteFooter.querySelector('.footer__statistics');
 
-render(siteHeader, new UserRatingView());
-render(siteFooterStatistics, new FilmStatisticsView());
-
 const commentsModel = new CommentsModel();
 commentsModel.comments = comments;
 
 const filmsModel = new FilmsModel(commentsModel);
 filmsModel.filmsList = films;
 
+render(siteHeader, new UserRatingView());
+render(siteFooterStatistics, new FilmStatisticsView(filmsModel.filmsList.length));
+
 const filterModel = new FilterModel();
 
 const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel);
 
 const filmListPresenter = new FilmListPresenter(siteMainElement, filmsModel, commentsModel, filterModel);
+
+let statisticsComponent = null;
+
+const handleSiteMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.FILMS:
+      remove(statisticsComponent);
+      filmListPresenter.init();
+      break;
+    case MenuItem.STATISTICS:
+      filmListPresenter.destroy();
+      statisticsComponent = new StatisticsView(filmsModel.watchedFilmsList);
+      render(siteMainElement, statisticsComponent);
+      break;
+  }
+};
+
+filterPresenter.setMenuClickHandler(handleSiteMenuClick);
 
 filterPresenter.init();
 filmListPresenter.init();

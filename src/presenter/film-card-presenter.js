@@ -1,7 +1,7 @@
-import { KeysName } from '../render.js';
+import { KeysName } from '../constants';
 import FilmCardView from '../view/film-card-view';
 import FilmPopupView from '../view/film-popup-view';
-import {FilmActionType, UpdateType} from '../render.js';
+import {FilmActionType, UpdateType} from '../constants';
 import {render,
   RenderPosition,
   remove,

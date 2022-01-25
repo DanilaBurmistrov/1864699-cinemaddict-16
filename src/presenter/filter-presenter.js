@@ -1,7 +1,7 @@
 import MenuFilterView from '../view/menu-filter-view.js';
 import {render, replace, remove} from '../render.js';
-import { filter } from '../render.js';
-import {FilterType, UpdateType} from '../render.js';
+import { filter } from '../constants';
+import {FilterType, UpdateType, MenuItem} from '../constants';
 
 export default class FilterPresenter {
   #filterContainer = null;
@@ -9,6 +9,7 @@ export default class FilterPresenter {
   #filmsModel = null;
 
   #filterComponent = null;
+  #changeMenuType = null;
 
   constructor(filterContainer, filterModel, filmsModel) {
     this.#filterContainer = filterContainer;
@@ -17,7 +18,7 @@ export default class FilterPresenter {
   }
 
   get filters() {
-    const {filmsList} = this.#filmsModel;
+    const filmsList = this.#filmsModel.filmsList;
 
     return [
       {
@@ -46,9 +47,11 @@ export default class FilterPresenter {
   init = () => {
     const filters = this.filters;
     const prevFilterComponent = this.#filterComponent;
+    const currentFilter = this.#filterModel.menuType === MenuItem.FILMS ? this.#filterModel.filter : null;
 
-    this.#filterComponent = new MenuFilterView(filters, this.#filterModel.filter);
+    this.#filterComponent = new MenuFilterView(filters, currentFilter, this.#filterModel.menuType);
     this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
+    this.#filterComponent.setMenuClickHandler(this.#handleChangeMenu);
 
     this.#filmsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -60,6 +63,7 @@ export default class FilterPresenter {
 
     replace(this.#filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
+
   }
 
   destroy = () => {
@@ -77,10 +81,29 @@ export default class FilterPresenter {
   }
 
   #handleFilterTypeChange = (filterType) => {
+    if(this.#filterModel.menuType === MenuItem.STATISTICS) {
+      this.#handleChangeMenu(MenuItem.FILMS);
+    }
     if (this.#filterModel.filter === filterType) {
       return;
     }
 
     this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
+  }
+
+  setMenuClickHandler = (callback) => {
+    this.#changeMenuType = callback;
+  }
+
+  #handleChangeMenu = (menuType) => {
+    if (this.#filterModel.menuType === menuType) {
+      return;
+    }
+
+    this.#filterModel.filter = FilterType.ALL;
+    this.#filterModel.setMenuType(menuType);
+    this.#changeMenuType(this.#filterModel.menuType);
+
+    this.init();
   }
 }
