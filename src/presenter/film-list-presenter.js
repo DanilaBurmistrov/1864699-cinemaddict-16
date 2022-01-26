@@ -21,6 +21,7 @@ import FilmsExtraMostCommentedView from '../view/film-extra-most-commented-view.
 import { CommentAction } from '../constants';
 import { UpdateType } from '../constants';
 
+
 const FILM_COUNT_PER_STEP = 5;
 const FILMS_EXTRA_COUNT = 2;
 
@@ -88,10 +89,8 @@ export default class FilmListPresenter {
     this.#commentsModel.addObserver(this.#handleCommentEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
 
+    this.#renderExtraFilmsComponent();
     this.#renderMainContainer({resetRenderedFilmCount: true, resetSortType: true});
-
-    this.#renderMostCommentedFilms();
-    this.#renderTopRatedFilms();
   }
 
   destroy = () => {
@@ -139,8 +138,9 @@ export default class FilmListPresenter {
   }
 
   #renderSort = () => {
-    render(this.#container, this.#sortComponent);
+    this.#sortComponent = new SortView(this.#currentSortType);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+    render(this.#container, this.#sortComponent);
   }
 
   #handleFilmChange = (updateType, updatedFilm) => {
@@ -173,12 +173,7 @@ export default class FilmListPresenter {
   }
 
   #initFilms = () => {
-    const filmsCount = this.filmsList.length;
     render(this.#container, this.#filmsComponent);
-    if (filmsCount === 0) {
-      render(this.#container, new NoFilmsView());
-      return;
-    }
     this.#renderFilmsList(this.filmsList);
   }
 
@@ -233,16 +228,20 @@ export default class FilmListPresenter {
     this.#showMoreComponent.setClickHandler(this.#handleMoreButtonClick);
   }
 
-  #renderTopRatedFilms = () => {
+  #renderExtraFilmsComponent = () => {
     render(this.#filmsComponent, this.#filmsExtraTopRatedComponent, RenderPosition.BEFOREEND);
     const topRatedContainerElement = this.#filmsExtraTopRatedComponent.filmsExtraTopRatedContainer;
     this.#renderFilms(topRatedContainerElement, this.topRatedFilmsList, this.#topRatedFilmsPresenter);
-  }
 
-  #renderMostCommentedFilms = () => {
     render(this.#filmsComponent, this.#filmsExtraMostCommentedComponent, RenderPosition.BEFOREEND);
     const mostCommentedContainerElement = this.#filmsExtraMostCommentedComponent.filmsExtraMostCommentedContainer;
     this.#renderFilms(mostCommentedContainerElement, this.mostCommentedFilmsList, this.#mostCommentedFilmsPresenter);
+  }
+
+
+  #renderNoFilmsComponent = () => {
+    this.#noFilmsComponent = new NoFilmsView(this.#filterType);
+    render(this.#filmsComponent, this.#noFilmsComponent, RenderPosition.BEFOREBEGIN);
   }
 
   #clearMainContainer = ({resetRenderedFilmCount = false, resetSortTypes = false} = {}) => {
@@ -271,6 +270,11 @@ export default class FilmListPresenter {
   }
 
   #renderMainContainer = () => {
+    const filmsCount = this.filmsList.length;
+    if (filmsCount === 0) {
+      this.#renderNoFilmsComponent();
+      return;
+    }
     if(this.#filmPresenterWithPopup && this.#filmIdWithOpenPopup) {
       const filmOnPopup = this.#filmsModel.getFilmById(this.#filmIdWithOpenPopup);
       this.#filmPresenterWithPopup.init(filmOnPopup);
