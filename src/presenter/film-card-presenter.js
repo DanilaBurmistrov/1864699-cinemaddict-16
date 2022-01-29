@@ -25,6 +25,10 @@ constructor(container, changeData, commentsModel, changeComment) {
   this.#changeComment = changeComment;
 }
 
+get filmId () {
+  return this.#film.id;
+}
+
 init = (film) => {
   this.#film = film;
 
@@ -113,19 +117,18 @@ setCardClose = (callback) => {
   switch (type) {
     case FilmActionType.ADD_WATCH_LIST:
       this.#changeData(
-        UpdateType.MINOR, {...this.#film, isInWatchList: !this.#film.isInWatchList});
+        UpdateType.PATCH, {...this.#film, isInWatchList: !this.#film.isInWatchList});
       break;
 
     case FilmActionType.MARK_WATCHED:
       this.#changeData(
-        UpdateType.MINOR, {...this.#film, isWatched: !this.#film.isWatched});
+        UpdateType.PATCH, {...this.#film, isWatched: !this.#film.isWatched});
       break;
 
     case FilmActionType.MARK_FAVORITE:
       this.#changeData(
-        UpdateType.MINOR, {...this.#film, isFavorite: !this.#film.isFavorite});
+        UpdateType.PATCH, {...this.#film, isFavorite: !this.#film.isFavorite});
       break;
-
   }
 
 }
