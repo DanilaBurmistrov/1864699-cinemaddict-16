@@ -212,12 +212,16 @@ const generateCommentDay = () => {
   return dayjs().add(daysGap, 'day');
 };
 
-const generateComment = () => ({
-  emoji: generateEmoji(),
-  text: generateCommentText(),
-  author: generateCommentAuthor(),
-  day: generateCommentDay(),
-});
+const generateComment = () => {
+  const comment ={
+    id: nanoid(),
+    emoji: generateEmoji(),
+    text: generateCommentText(),
+    author: generateCommentAuthor(),
+    day: generateCommentDay(),
+  };
+  return comment;
+};
 
 export const generateComments = () => {
   const commentCount = getRandomInteger(0, 5);

@@ -89,7 +89,6 @@ export default class FilmListPresenter {
     this.#commentsModel.addObserver(this.#handleCommentEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
 
-    this.#renderExtraFilmsComponent();
     this.#renderMainContainer({resetRenderedFilmCount: true, resetSortType: true});
   }
 
@@ -109,6 +108,8 @@ export default class FilmListPresenter {
     switch (updateType) {
       case UpdateType.PATCH:
         this.#filmsPresenter.get(data.id).init(data);
+        this.#topRatedFilmsPresenter.get(data.id).init(data);
+        this.#mostCommentedFilmsPresenter.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
         this.#clearMainContainer();
@@ -249,10 +250,15 @@ export default class FilmListPresenter {
 
     this.#filmsPresenter.forEach((presenter) => presenter.destroy());
     this.#filmsPresenter.clear();
+    this.#topRatedFilmsPresenter.forEach((presenter) => presenter.destroy());
+    this.#topRatedFilmsPresenter.clear();
+    this.#mostCommentedFilmsPresenter.forEach((presenter) => presenter.destroy());
+    this.#mostCommentedFilmsPresenter.clear();
 
     remove(this.#sortComponent);
     remove(this.#showMoreComponent);
     remove(this.#filmsListComponent);
+    remove(this.#filmsComponent);
 
     if(this.#noFilmsComponent) {
       remove(this.#noFilmsComponent);
@@ -280,7 +286,7 @@ export default class FilmListPresenter {
       this.#filmPresenterWithPopup.init(filmOnPopup);
       this.#filmPresenterWithPopup.openPopup();
     }
-
+    this.#renderExtraFilmsComponent();
     this.#renderSort();
     this.#initFilms();
   }

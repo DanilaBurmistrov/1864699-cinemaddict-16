@@ -7,6 +7,7 @@ const generateGenresTemplate = (genres) => genres.map((genre) => `<span class="f
 
 const generateComment = (comment) => {
   const {
+    id,
     emoji,
     text,
     author,
@@ -22,7 +23,7 @@ const generateComment = (comment) => {
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${getFormattedDate(day, 'YYYY/MM/DD HH:mm')}</span>
-          <button class="film-details__comment-delete">Delete</button>
+          <button class="film-details__comment-delete" data-comment-id="${id}">Delete</button>
         </p>
       </div>
     </li>`;
@@ -187,7 +188,7 @@ export default class FilmPopupView extends SmartView {
   }
 
   get template() {
-    return createFilmDetailsTemplate(this._data);
+    return createFilmDetailsTemplate(this._data, this.#comments);
   }
 
   get closeButtonElement() {
@@ -232,7 +233,7 @@ export default class FilmPopupView extends SmartView {
     if (index === -1) {
       throw new Error('Can\'t delete unexisting comment');
     }
-    this._callback.commentAction(CommentAction.DELETE, this.#comments[index]);
+    this._callback.commentAction(CommentAction.DELETE, this.#comments[index], this._data.id);
   }
 
   addCommentHandler = () => {
@@ -242,7 +243,7 @@ export default class FilmPopupView extends SmartView {
       text: this._data.comment
     };
 
-    this._callback.commentAction(CommentAction.ADD, newComment);
+    this._callback.commentAction(CommentAction.ADD, newComment, this._data.id);
   }
 
   static parseFilmToData = (film) => ({...film,
