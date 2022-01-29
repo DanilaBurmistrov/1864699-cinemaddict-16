@@ -67,27 +67,3 @@ export const replace = (newElement, oldElement) => {
   parent.replaceChild(newChild, oldChild);
 };
 
-export const KeysName = {
-  ESC: 'Esc',
-  ESCAPE: 'Escape',
-};
-
-export const FilmActionType = {
-  ADD_WATCH_LIST: 'watchList',
-  MARK_WATCHED: 'watched',
-  MARK_FAVORITE: 'favorite',
-};
-
-export const FilmListNames = {
-  ALL_FILMS: 'allFilms',
-  TOP_RATED: 'topRated',
-  MOST_COMMENTED: 'mostCommented',
-};
-
-export const SortTypes = {
-  DEFAULT: 'default',
-  DATE: 'date',
-  RATING: 'rating',
-};
-
-

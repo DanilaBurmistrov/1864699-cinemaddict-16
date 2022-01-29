@@ -1,7 +1,7 @@
-import { KeysName } from '../render.js';
+import { KeysName } from '../constants';
 import FilmCardView from '../view/film-card-view';
 import FilmPopupView from '../view/film-popup-view';
-import {FilmActionType} from '../render.js';
+import {FilmActionType, UpdateType} from '../constants';
 import {render,
   RenderPosition,
   remove,
@@ -10,15 +10,23 @@ import {render,
 export class FilmPresenter {
 #container = null;
 #changeData = null;
+#commentsModel;
+#changeComment = null;
 #film  = null;
 #filmCardComponent = null;
 #popupComponent = null;
 #siteFooter = document.querySelector('.footer');
 _callback = {};
 
-constructor(container, changeData) {
+constructor(container, changeData, commentsModel, changeComment) {
   this.#container = container;
   this.#changeData = changeData;
+  this.#commentsModel = commentsModel;
+  this.#changeComment = changeComment;
+}
+
+get filmId () {
+  return this.#film.id;
 }
 
 init = (film) => {
@@ -40,19 +48,22 @@ init = (film) => {
 }
 
 openPopup = () => {
+  const filmComments = this.#commentsModel.getCommentsByFilmId(this.#film.id);
   const prevPopupComponent = this.#popupComponent;
-  this.#popupComponent = new FilmPopupView(this.#film);
+  this.#popupComponent = new FilmPopupView(this.#film, filmComments);
 
   this.#popupComponent.setCloseClickHandler(this.#handleClosePopup);
   this.#popupComponent.setActionHandler(this.#handlerFilmAction);
+  this.#popupComponent.setCommentActionHandler(this.#handlerCommentAction);
 
-  document.addEventListener('keydown', this.#onEscKeyDown);
   document.body.classList.add('hide-overflow');
 
   render(this.#siteFooter, this.#popupComponent, RenderPosition.AFTEREND);
 
   if(prevPopupComponent === null) {
     render(this.#siteFooter, this.#popupComponent, RenderPosition.AFTEREND);
+    document.addEventListener('keydown', this.#onEscKeyDown);
+    document.addEventListener('keydown', this.#ctrEnterDownHandler);
     return;
   }
 
@@ -62,6 +73,7 @@ openPopup = () => {
 
 removePopup() {
   document.removeEventListener('keydown', this.#onEscKeyDown);
+  document.removeEventListener('keydown', this.#ctrEnterDownHandler);
   document.body.classList.remove('hide-overflow');
 
   if(this.#popupComponent !== null) {
@@ -74,6 +86,13 @@ removePopup() {
   if (evt.key === KeysName.ESC || evt.key === KeysName.ESCAPE) {
     evt.preventDefault();
     this.removePopup();
+  }
+}
+
+#ctrEnterDownHandler = (evt) => {
+  if (evt.key === KeysName.ENTER || evt.key === KeysName.CTRL) {
+    evt.preventDefault(evt);
+    this.#popupComponent.addCommentHandler();
   }
 }
 
@@ -97,22 +116,31 @@ setCardClose = (callback) => {
 #handlerFilmAction = (type) => {
   switch (type) {
     case FilmActionType.ADD_WATCH_LIST:
-      this.#changeData({...this.#film, isInWatchList: !this.#film.isInWatchList});
+      this.#changeData(
+        UpdateType.PATCH, {...this.#film, isInWatchList: !this.#film.isInWatchList});
       break;
 
     case FilmActionType.MARK_WATCHED:
-      this.#changeData({...this.#film, isWatched: !this.#film.isWatched});
+      this.#changeData(
+        UpdateType.PATCH, {...this.#film, isWatched: !this.#film.isWatched});
       break;
 
     case FilmActionType.MARK_FAVORITE:
-      this.#changeData({...this.#film, isFavorite: !this.#film.isFavorite});
+      this.#changeData(
+        UpdateType.PATCH, {...this.#film, isFavorite: !this.#film.isFavorite});
       break;
-
   }
 
 }
 
+#handlerCommentAction = (type, comment ) => {
+  this.#changeComment(type, UpdateType.MINOR, comment);
+}
+
 destroy = () => {
+  if(this.#popupComponent){
+    this.#popupComponent.saveScroll();
+  }
   remove(this.#filmCardComponent);
 }
 

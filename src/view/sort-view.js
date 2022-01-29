@@ -1,10 +1,8 @@
 import AbstractView from './abstract-view';
-import { SortTypes } from '../render';
+import { SortTypes } from '../constants';
 
 const createSortTemplate = (currentSortType) => {
-
   const activeClassName = (isActive) => isActive ? 'sort__button--active' : '';
-
   return `<ul class="sort">
       <li><a href="#" class="sort__button ${activeClassName(currentSortType === SortTypes.DEFAULT)}"
         data-sort-type="${SortTypes.DEFAULT}">Sort by default</a></li>

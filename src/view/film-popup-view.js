@@ -1,11 +1,13 @@
-import { FilmActionType } from '../render';
-import { getFormattedDate } from '../utils/common';
+import he from 'he';
+import { FilmActionType, CommentAction } from '../constants';
+import { getFormattedDate, getTimeOutOfMinutes } from '../utils/common';
 import SmartView from './smart-view';
 
 const generateGenresTemplate = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
 
 const generateComment = (comment) => {
   const {
+    id,
     emoji,
     text,
     author,
@@ -21,7 +23,7 @@ const generateComment = (comment) => {
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${getFormattedDate(day, 'YYYY/MM/DD HH:mm')}</span>
-          <button class="film-details__comment-delete">Delete</button>
+          <button class="film-details__comment-delete" data-comment-id="${id}">Delete</button>
         </p>
       </div>
     </li>`;
@@ -38,7 +40,7 @@ const createFilmDetailsTemplate = (film) => {
     actors,
     duration,
     countries,
-    genre,
+    genres,
     description,
     rating,
     releaseDate,
@@ -96,7 +98,7 @@ const createFilmDetailsTemplate = (film) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${duration}</td>
+              <td class="film-details__cell">${getTimeOutOfMinutes(duration)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
@@ -104,7 +106,7 @@ const createFilmDetailsTemplate = (film) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Genres</td>
-              <td class="film-details__cell">${generateGenresTemplate(genre)}</td>
+              <td class="film-details__cell">${generateGenresTemplate(genres)}</td>
             </tr>
           </table>
           <p class="film-details__film-description">${description}</p>
@@ -114,7 +116,7 @@ const createFilmDetailsTemplate = (film) => {
         <button type="button" data-action-type="${FilmActionType.ADD_WATCH_LIST}"
                 class="film-details__control-button
                       film-details__control-button--watchlist
-                      ${activeClassName(!isInWatchList)}"
+                      ${activeClassName(isInWatchList)}"
                 id="watchlist" name="watchlist">
                 Add to watchlist
         </button>
@@ -143,7 +145,7 @@ const createFilmDetailsTemplate = (film) => {
         <div class="film-details__new-comment">
           <div class="film-details__add-emoji-label">${createCommentEmojiTemplate(commentEmoji)}</div>
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${comment}</textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${he.encode(comment)}</textarea>
           </label>
           <div class="film-details__emoji-list">
               <input class="film-details__emoji-item visually-hidden" name="comment-emoji" ${checkedEmoji('smile')} type="radio" id="emoji-smile" value="smile">
@@ -174,17 +176,19 @@ export default class FilmPopupView extends SmartView {
   _scrollPosition = 0;
   #elementScroll;
   #newElementScroll;
+  #comments = [];
 
-  constructor(film) {
+  constructor(film, comments) {
     super();
 
     this._data = FilmPopupView.parseFilmToData(film);
+    this.#comments = comments;
 
     this.#setInnerHandlers();
   }
 
   get template() {
-    return createFilmDetailsTemplate(this._data);
+    return createFilmDetailsTemplate(this._data, this.#comments);
   }
 
   get closeButtonElement() {
@@ -211,6 +215,35 @@ export default class FilmPopupView extends SmartView {
   #actionClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.action(evt.target.dataset.actionType);
+  }
+
+  setCommentActionHandler = (callback) => {
+    this._callback.commentAction = callback;
+
+    this.element.querySelectorAll('.film-details__comment-delete').forEach((button) => {
+      button.addEventListener('click', this.#deleteCommentHandler);
+    });
+  }
+
+  #deleteCommentHandler = (evt) => {
+    evt.preventDefault();
+    const  commentId = evt.target.dataset.commentId;
+    const index = this.#comments.findIndex((comment) => comment.id === commentId);
+
+    if (index === -1) {
+      throw new Error('Can\'t delete unexisting comment');
+    }
+    this._callback.commentAction(CommentAction.DELETE, this.#comments[index], this._data.id);
+  }
+
+  addCommentHandler = () => {
+    const newComment = {
+      idFilm: this._data.id,
+      emoji: this._data.commentEmoji ? `./images/emoji/${this._data.commentEmoji}.png` : null,
+      text: this._data.comment
+    };
+
+    this._callback.commentAction(CommentAction.ADD, newComment, this._data.id);
   }
 
   static parseFilmToData = (film) => ({...film,
@@ -259,6 +292,7 @@ export default class FilmPopupView extends SmartView {
     this.#setInnerHandlers();
     this.setCloseClickHandler(this._callback.closeClick);
     this.setActionHandler(this._callback.action);
+    this.setCommentActionHandler(this._callback.commentAction);
   }
 
   saveScrollPosition = () => {
@@ -269,36 +303,6 @@ export default class FilmPopupView extends SmartView {
   setScrollPosition = () => {
     this.#newElementScroll = document.querySelector('.film-details');
     this.#newElementScroll.scrollTop = this._scrollPosition;
-  }
-
-  setFavoriteClickHandler = (callback) => {
-    this._callback.favoriteClick = callback;
-    this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#favoriteClickHandler);
-  }
-
-  setWatchedClickHandler = (callback) => {
-    this._callback.watchedClick = callback;
-    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#watchedClickHandler);
-  }
-
-  setWatchlistClickHandler = (callback) => {
-    this._callback.watchlistClick = callback;
-    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#watchlistClickHandler);
-  }
-
-  #favoriteClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.favoriteClick();
-  }
-
-  #watchlistClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.watchlistClick();
-  }
-
-  #watchedClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.watchedClick();
   }
 
 }
