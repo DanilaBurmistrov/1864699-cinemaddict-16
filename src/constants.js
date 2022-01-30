@@ -1,4 +1,5 @@
 export const MINUTES_IN_HOURS = 60;
+export const SHORT_DESCRIPTION_NUMBER_OF_SYMBOLS = 140;
 
 export const KeysName = {
   ESC: 'Esc',
@@ -48,6 +49,8 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
+  LOADED_COMMENT: 'LOADED_COMMENT',
 };
 
 export const MenuItem = {
@@ -63,4 +66,9 @@ export const StatisticsType = {
   YEAR: 'year',
 };
 
-export const SHORT_DESCRIPTION_NUMBER_OF_SYMBOLS = 140;
+export const Emoji = {
+  SMILE: 'smile',
+  SLEEPING: 'sleeping',
+  PUKE: 'puke',
+  ANGRY: 'angry',
+};

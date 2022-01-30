@@ -7,7 +7,13 @@ import {render,
   remove,
   replace} from '../render.js';
 
-export class FilmPresenter {
+export const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
+};
+
+export default class FilmPresenter {
 #container = null;
 #changeData = null;
 #commentsModel;
@@ -17,6 +23,7 @@ export class FilmPresenter {
 #popupComponent = null;
 #siteFooter = document.querySelector('.footer');
 _callback = {};
+#isCommentLoaded = false;
 
 constructor(container, changeData, commentsModel, changeComment) {
   this.#container = container;
@@ -47,9 +54,18 @@ init = (film) => {
   remove(prevFilmComponent);
 }
 
+handleLoadedComment() {
+  this.#isCommentLoaded = true;
+}
+
 openPopup = () => {
-  const filmComments = this.#commentsModel.getCommentsByFilmId(this.#film.id);
   const prevPopupComponent = this.#popupComponent;
+  let filmComments = [];
+  if(!this.#isCommentLoaded) {
+    this.#commentsModel.loadComments(this.#film.id);
+  } else {
+    filmComments = this.#commentsModel.getCommentsByFilmId(this.#film.id);
+  }
   this.#popupComponent = new FilmPopupView(this.#film, filmComments);
 
   this.#popupComponent.setCloseClickHandler(this.#handleClosePopup);
@@ -142,6 +158,57 @@ destroy = () => {
     this.#popupComponent.saveScroll();
   }
   remove(this.#filmCardComponent);
+}
+
+setViewState = (state, updateId = null) => {
+  const resetFormState = () => {
+    this.#popupComponent.updateData({
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+      deletingCommentId: null,
+    });
+  };
+
+  switch (state) {
+    case State.SAVING:
+      this.#popupComponent.updateData({
+        isDisabled: true,
+        isSaving: true,
+      });
+      break;
+    case State.DELETING:
+      this.#popupComponent.updateData({
+        isDisabled: true,
+        isDeleting: true,
+        deletingCommentId: updateId,
+      });
+      break;
+    case State.ABORTING:
+      this.#filmCardComponent.shake(resetFormState);
+      this.#popupComponent.shake(resetFormState);
+      break;
+  }
+}
+
+setSaving = () => {
+  this.#popupComponent.updateData({
+    isDisabled: true,
+    isSaving: true,
+  });
+}
+
+setAborting = () => {
+  const resetFormState = () => {
+    this.#popupComponent.updateData({
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+      deletingCommentId: null,
+    });
+  };
+
+  this.#popupComponent.shake(resetFormState);
 }
 
 }

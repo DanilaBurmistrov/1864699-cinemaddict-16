@@ -11,7 +11,7 @@ export const getGenresWithCountFromFilmsList = (filmsList) => {
   });
   return Array.from(genres, (genre) => ({
     genre: genre,
-    count: countFilmsByGenre(filmsList, genre)
+    count: countFilmsByGenre(filmsList, genre),
   }));
 };
 

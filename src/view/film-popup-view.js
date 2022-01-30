@@ -1,11 +1,11 @@
 import he from 'he';
-import { FilmActionType, CommentAction } from '../constants';
-import { getFormattedDate, getTimeOutOfMinutes } from '../utils/common';
+import { FilmActionType, CommentAction, Emoji } from '../constants';
+import { getHumanFormattedDate, getTimeOutOfMinutes } from '../utils/common';
 import SmartView from './smart-view';
 
 const generateGenresTemplate = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
 
-const generateComment = (comment) => {
+const generateComment = (comment, isDeleting, isDisabled, deletingCommentId) => {
   const {
     id,
     emoji,
@@ -22,24 +22,27 @@ const generateComment = (comment) => {
         <p class="film-details__comment-text">${text}</p>
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
-          <span class="film-details__comment-day">${getFormattedDate(day, 'YYYY/MM/DD HH:mm')}</span>
-          <button class="film-details__comment-delete" data-comment-id="${id}">Delete</button>
+          <span class="film-details__comment-day">${getHumanFormattedDate(day)}</span>
+          <button class="film-details__comment-delete" data-comment-id="${id}" ${isDisabled ? 'disabled' : ''}>${isDeleting && id === deletingCommentId ? 'Deleting...' : 'Delete'}</button>
         </p>
       </div>
     </li>`;
 };
 
-const generateCommentTemplate = (commentList) => commentList.map((comment) => generateComment(comment)).join('');
+const generateCommentTemplate = (commentList, isDeleting, isDisabled, deletingCommentId) => commentList.length
+  ? commentList.map((comment) => generateComment(comment, isDeleting, isDisabled, deletingCommentId)).join('')
+  : '';
 const createCommentEmojiTemplate = (emoji) => emoji ? `<img src="images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">` : '';
 
 const createFilmDetailsTemplate = (film) => {
   const {
     title,
+    titleOriginal,
     director,
     writers,
     actors,
     duration,
-    countries,
+    country,
     genres,
     description,
     rating,
@@ -52,6 +55,10 @@ const createFilmDetailsTemplate = (film) => {
     comments,
     commentEmoji,
     comment,
+    isDisabled,
+    isSaving,
+    isDeleting,
+    deletingCommentId,
   } = film;
 
   const activeClassName = (item) => item ? 'film-details__control-button--active' : '';
@@ -73,7 +80,7 @@ const createFilmDetailsTemplate = (film) => {
           <div class="film-details__info-head">
             <div class="film-details__title-wrap">
               <h3 class="film-details__title">${title}</h3>
-              <p class="film-details__title-original">Original: ${title}</p>
+              <p class="film-details__title-original">Original: ${titleOriginal}</p>
             </div>
             <div class="film-details__rating">
               <p class="film-details__total-rating">${rating}</p>
@@ -102,7 +109,7 @@ const createFilmDetailsTemplate = (film) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
-              <td class="film-details__cell">${countries}</td>
+              <td class="film-details__cell">${country}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Genres</td>
@@ -140,27 +147,27 @@ const createFilmDetailsTemplate = (film) => {
       <section class="film-details__comments-wrap">
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
         <ul class="film-details__comments-list">
-          ${generateCommentTemplate(comments)}
+          ${generateCommentTemplate(comments, isDeleting, isDisabled, deletingCommentId)}
         </ul>
         <div class="film-details__new-comment">
           <div class="film-details__add-emoji-label">${createCommentEmojiTemplate(commentEmoji)}</div>
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${he.encode(comment)}</textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"  ${isSaving ? 'disabled' : ''}>${he.encode(comment)}</textarea>
           </label>
           <div class="film-details__emoji-list">
-              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" ${checkedEmoji('smile')} type="radio" id="emoji-smile" value="smile">
+              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" ${isSaving ? 'disabled' : ''} ${checkedEmoji(Emoji.SMILE)} type="radio" id="emoji-smile" value="${Emoji.SMILE}">
               <label class="film-details__emoji-label" for="emoji-smile">
                 <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
               </label>
-              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" ${checkedEmoji('sleeping')} type="radio" id="emoji-sleeping" value="sleeping">
+              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" ${isSaving ? 'disabled' : ''}  ${checkedEmoji(Emoji.SLEEPING)} type="radio" id="emoji-sleeping" value="${Emoji.SLEEPING}">
               <label class="film-details__emoji-label" for="emoji-sleeping">
                 <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
               </label>
-              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" ${checkedEmoji('puke')} type="radio" id="emoji-puke" value="puke">
+              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" ${isSaving ? 'disabled' : ''}  ${checkedEmoji(Emoji.PUKE)} type="radio" id="emoji-puke" value="${Emoji.PUKE}">
               <label class="film-details__emoji-label" for="emoji-puke">
                 <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
               </label>
-              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" ${checkedEmoji('angry')} type="radio" id="emoji-angry" value="angry">
+              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" ${isSaving ? 'disabled' : ''}  ${checkedEmoji(Emoji.ANGRY)} type="radio" id="emoji-angry" value="${Emoji.ANGRY}">
               <label class="film-details__emoji-label" for="emoji-angry">
                 <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
               </label>
@@ -238,26 +245,34 @@ export default class FilmPopupView extends SmartView {
 
   addCommentHandler = () => {
     const newComment = {
-      idFilm: this._data.id,
-      emoji: this._data.commentEmoji ? `./images/emoji/${this._data.commentEmoji}.png` : null,
-      text: this._data.comment
+      emotion: this._data.commentEmoji,
+      comment: this._data.comment,
     };
 
     this._callback.commentAction(CommentAction.ADD, newComment, this._data.id);
   }
 
+  // static parseFilmToData = (film) => ({...film,
+  //   comment: '',
+  //   commentEmoji: null,
+  // });
+
+  // static parseDataToFilm = (data) => {
+  //   const film = {...data};
+  //   delete film.comment;
+  //   delete film.commentEmoji;
+
+  //   return film;
+  // };
+
   static parseFilmToData = (film) => ({...film,
     comment: '',
     commentEmoji: null,
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
+    deletingCommentId: null,
   });
-
-  static parseDataToFilm = (data) => {
-    const film = {...data};
-    delete film.comment;
-    delete film.commentEmoji;
-
-    return film;
-  };
 
   reset = (film) => {
     this.updateData(
