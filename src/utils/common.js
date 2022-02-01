@@ -52,3 +52,23 @@ export const getTimeOutOfMinutes = (totalMinutes) => {
 };
 
 export const truncateText = (text, length) =>  text.length > length ? `${text.slice(0, length)}...` : text;
+
+export const calculateUserRating = (filmsWatchedCount) => {
+  const UserRankType = {
+    NOVICE: 'Novice',
+    FAN: 'Fan',
+    MOVIE_BUFF: 'Movie Buff',
+  };
+
+  if (filmsWatchedCount === 0) {
+    return '';
+  }
+  if (filmsWatchedCount <= 10) {
+    return UserRankType.NOVICE;
+  }
+  if (filmsWatchedCount <= 20) {
+    return UserRankType.FAN;
+  }
+
+  return UserRankType.MOVIE_BUFF;
+};

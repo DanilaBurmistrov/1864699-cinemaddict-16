@@ -22,7 +22,7 @@ const siteMainElement = document.querySelector('.main');
 const siteFooter = document.querySelector('.footer');
 const siteFooterStatistics = siteFooter.querySelector('.footer__statistics');
 
-render(siteHeader, new UserRatingView());
+render(siteHeader, new UserRatingView(filmsModel));
 render(siteFooterStatistics, new FilmStatisticsView(filmsModel.filmsList.length));
 
 const filterModel = new FilterModel();
@@ -41,7 +41,7 @@ const handleSiteMenuClick = (menuItem) => {
       break;
     case MenuItem.STATISTICS:
       filmListPresenter.destroy();
-      statisticsComponent = new StatisticsView(filmsModel.watchedFilmsList);
+      statisticsComponent = new StatisticsView(filmsModel.filmsList);
       render(siteMainElement, statisticsComponent);
       break;
   }

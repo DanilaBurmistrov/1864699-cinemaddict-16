@@ -72,3 +72,10 @@ export const Emoji = {
   PUKE: 'puke',
   ANGRY: 'angry',
 };
+
+export const PERIODS = {
+  ONE_DAY: 1,
+  WEEK: 7,
+  MONTH: 31,
+  YEAR: 366,
+};
