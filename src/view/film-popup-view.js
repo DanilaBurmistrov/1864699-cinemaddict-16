@@ -5,18 +5,18 @@ import SmartView from './smart-view';
 
 const generateGenresTemplate = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
 
-const generateComment = (comment, isDeleting, isDisabled, deletingCommentId) => {
+const generateComment = (item, isDeleting, isDisabled, deletingCommentId) => {
   const {
     id,
     emoji,
     text,
     author,
     day
-  } = comment;
+  } = item;
 
   return `<li class="film-details__comment">
       <span class="film-details__comment-emoji">
-        <img src="${emoji}" width="55" height="55" alt="emoji">
+        <img src="images/emoji/${emoji}.png" width="55" height="55" alt="emoji">
       </span>
       <div>
         <p class="film-details__comment-text">${text}</p>
@@ -34,7 +34,7 @@ const generateCommentTemplate = (commentList, isDeleting, isDisabled, deletingCo
   : '';
 const createCommentEmojiTemplate = (emoji) => emoji ? `<img src="images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">` : '';
 
-const createFilmDetailsTemplate = (film) => {
+const createFilmDetailsTemplate = (film, comments) => {
   const {
     title,
     titleOriginal,
@@ -52,7 +52,6 @@ const createFilmDetailsTemplate = (film) => {
     isFavorite,
     isWatched,
     isInWatchList,
-    comments,
     commentEmoji,
     comment,
     isDisabled,
@@ -234,38 +233,27 @@ export default class FilmPopupView extends SmartView {
 
   #deleteCommentHandler = (evt) => {
     evt.preventDefault();
-    const  commentId = evt.target.dataset.commentId;
+    const commentId = evt.target.dataset.commentId;
     const index = this.#comments.findIndex((comment) => comment.id === commentId);
 
     if (index === -1) {
       throw new Error('Can\'t delete unexisting comment');
     }
-    this._callback.commentAction(CommentAction.DELETE, this.#comments[index], this._data.id);
+    this._callback.commentAction(CommentAction.DELETE, this.#comments[index]);
   }
 
   addCommentHandler = () => {
     const newComment = {
-      emotion: this._data.commentEmoji,
-      comment: this._data.comment,
+      emoji: this._data.commentEmoji,
+      text: this._data.comment,
+      commentDate: new Date()
     };
 
     this._callback.commentAction(CommentAction.ADD, newComment, this._data.id);
   }
 
-  // static parseFilmToData = (film) => ({...film,
-  //   comment: '',
-  //   commentEmoji: null,
-  // });
-
-  // static parseDataToFilm = (data) => {
-  //   const film = {...data};
-  //   delete film.comment;
-  //   delete film.commentEmoji;
-
-  //   return film;
-  // };
-
-  static parseFilmToData = (film) => ({...film,
+  static parseFilmToData = (film) => ({
+    ...film,
     comment: '',
     commentEmoji: null,
     isDisabled: false,

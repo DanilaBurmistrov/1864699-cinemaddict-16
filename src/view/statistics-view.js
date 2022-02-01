@@ -9,7 +9,6 @@ import {
 } from '../utils/statistics.js';
 import { StatisticsType } from '../constants';
 import { MINUTES_IN_HOURS } from '../constants.js';
-import { calculateUserRating } from '../utils/common.js';
 
 const renderChart = (statisticCtx, filmsList, statisticsType) => {
   const filteredFilmsList = getFilmsListFilteredByTime(statisticsType, filmsList);
@@ -104,7 +103,7 @@ const createStatisticsTemplate = (data) => {
     <p class="statistic__rank">
       Your rank
       <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-      <span class="statistic__rank-label">${calculateUserRating(filmsWatched)}</span>
+      <span class="statistic__rank-label">Movie buff</span>
     </p>
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
       <p class="statistic__filters-description">Show stats:</p>

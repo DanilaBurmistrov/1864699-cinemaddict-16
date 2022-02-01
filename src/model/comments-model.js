@@ -1,4 +1,3 @@
-import { UpdateType } from '../constants.js';
 import AbstractObservable from '../utils/abstract-observable.js';
 
 export default class CommentsModel extends AbstractObservable {
@@ -10,38 +9,51 @@ export default class CommentsModel extends AbstractObservable {
     this.#apiService = apiService;
   }
 
-  loadComments = async (idFilm) => {
-    let comments;
+  hasComments = (filmId) => this.#comments.has(filmId);
+
+  loadComments = async (updateType, filmId) => {
+    let comments = [];
+
     try {
-      comments = await this.#apiService.getComments(idFilm);
-      this.#comments.set(idFilm, comments.map(this.#adaptToClient));
-    } catch(err) {
-      comments = [];
+      comments = await this.#apiService.getComments(filmId);
+
+      this.#comments.set(filmId, comments.map(this.#adaptToClient));
+
+    } catch (err) {
+      throw new Error(`Can't load comment with fildId${filmId}`);
     }
-    this._notify(UpdateType.LOADED_COMMENT, {idFilm: idFilm});
-    return comments.map(this.#adaptToClient);
+
+    this._notify(updateType, { filmId });
   }
 
-  getCommentsByFilmId = (idFilm) => this.#comments.get(idFilm);
+  getComments = (fildId) => {
+    if (!this.hasComments(fildId)) {
+      return [];
+    }
 
-  getCommentIdsByFilmId = (idFilm) => [...this.getCommentsByFilmId(idFilm)].map((comment) => comment.id);
+    return this.#comments.get(fildId);
+  }
 
   addComment = async (updateType, update) => {
-    const {comment, idFilm} = update;
+    const { comment, fildId } = update;
     try {
-      const response = await this.#apiService.addComment(comment, idFilm);
-      const {comments} = response;
+      const { comments } = await this.#apiService.addComment(comment, fildId);
+
       const newComments = comments.map(this.#adaptToClient);
-      this.#comments.set(idFilm, newComments);
-      this._notify(updateType, {idFilm: idFilm});
+
+      this.#comments.set(fildId, newComments);
+
+      this._notify(updateType, { fildId });
+
     } catch (err) {
       throw new Error('Can\'t add comment');
     }
   }
 
   deleteComment = async (updateType, update) => {
-    const {comment, idFilm} = update;
-    const comments = this.getCommentsByFilmId(idFilm);
+    const { comment, fildId } = update;
+
+    const comments = this.getComments(fildId);
 
     if (!comments) {
       throw new Error('Can\'t delete comments for film');
@@ -55,19 +67,24 @@ export default class CommentsModel extends AbstractObservable {
 
     try {
       await this.#apiService.deleteComment(comment);
+
       const newComments = [
         ...comments.slice(0, index),
         ...comments.slice(index + 1),
       ];
-      this.#comments.set(idFilm, newComments);
-      this._notify(updateType, {idFilm: idFilm});
+
+      this.#comments.set(fildId, newComments);
+
+      this._notify(updateType, { idFilm: fildId });
+
     } catch (err) {
       throw new Error('Can\'t delete comment');
     }
   }
 
   #adaptToClient = (comment) => {
-    const adaptedComment = {...comment,
+    const adaptedComment = {
+      ...comment,
       emoji: comment.emotion,
       text: comment.comment,
       day: new Date(comment.date),

@@ -42,7 +42,7 @@ export const filter = {
 
 export const CommentAction = {
   ADD: 'add',
-  DELETE: 'delete',
+  DELETE: 'delete'
 };
 
 export const UpdateType = {
@@ -50,7 +50,7 @@ export const UpdateType = {
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   INIT: 'INIT',
-  LOADED_COMMENT: 'LOADED_COMMENT',
+  LOADED_COMMENTS: 'LOADED_COMMENTS',
 };
 
 export const MenuItem = {
@@ -73,9 +73,8 @@ export const Emoji = {
   ANGRY: 'angry',
 };
 
-export const PERIODS = {
-  ONE_DAY: 1,
-  WEEK: 7,
-  MONTH: 31,
-  YEAR: 366,
+export const UserRating = {
+  NOVICE: { min: 1, max: 10, name: 'novice' },
+  FAN: { min: 11, max: 20, name: 'fan' },
+  MOVIE_BUFF: { min: 21, name: 'movie buff' },
 };

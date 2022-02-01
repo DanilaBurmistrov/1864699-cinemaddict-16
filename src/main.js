@@ -4,8 +4,8 @@ import FilmListPresenter from './presenter/film-list-presenter.js';
 import FilmsModel from './model/films-model.js';
 import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
-import { MenuItem } from './constants.js';
-import {render, remove} from './render.js';
+import { MenuItem, UpdateType } from './constants.js';
+import { render, remove } from './render.js';
 import StatisticsView from './view/statistics-view.js';
 import UserRatingView from './view/user-rating-view.js';
 import ApiService from './api-service.js';
@@ -22,8 +22,24 @@ const siteMainElement = document.querySelector('.main');
 const siteFooter = document.querySelector('.footer');
 const siteFooterStatistics = siteFooter.querySelector('.footer__statistics');
 
-render(siteHeader, new UserRatingView(filmsModel));
-render(siteFooterStatistics, new FilmStatisticsView(filmsModel.filmsList.length));
+let userRatingView;
+
+const handleModelChange = (updateType) => {
+  if (updateType === UpdateType.INIT) {
+    render(siteFooterStatistics, new FilmStatisticsView(filmsModel.filmsList.length));
+  }
+
+  if (userRatingView) {
+    remove(userRatingView);
+  }
+
+  userRatingView = new UserRatingView(filmsModel.watchedFilmsList.length);
+
+  render(siteHeader, userRatingView);
+
+};
+
+filmsModel.addObserver(handleModelChange);
 
 const filterModel = new FilterModel();
 
@@ -41,7 +57,7 @@ const handleSiteMenuClick = (menuItem) => {
       break;
     case MenuItem.STATISTICS:
       filmListPresenter.destroy();
-      statisticsComponent = new StatisticsView(filmsModel.filmsList);
+      statisticsComponent = new StatisticsView(filmsModel.watchedFilmsList);
       render(siteMainElement, statisticsComponent);
       break;
   }
