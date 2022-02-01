@@ -229,21 +229,6 @@ export default class FilmListPresenter {
       this.#renderedFilmPage = Math.ceil(to / FILM_COUNT_PER_STEP);
     }
 
-    // if (this.#renderedFilmPage > 0) {
-    //   from = 0;
-
-    //   // if (this.#renderedFilmCount < FILM_COUNT_PER_STEP) {
-    //   //   this.#renderedFilmCount = Math.min(films.length, FILM_COUNT_PER_STEP);
-    //   // }
-
-    //   to = this.#renderedFilmPage;
-
-    // } else {
-    //   from = this.#renderedFilmPage;
-    //   to = Math.min(films.length, from + FILM_COUNT_PER_STEP);
-    //   this.#renderedFilmPage = to;
-    // }
-
     this.#renderPagedFilms(this.#filmsListComponent.filmsListContainer, from, to);
 
     if (to < filmsCount) {
@@ -264,11 +249,7 @@ export default class FilmListPresenter {
       this.#renderedFilmPage = Math.ceil(to / FILM_COUNT_PER_STEP);
     }
 
-    // const from = this.#renderedFilmPage;
-    // const to = from + FILM_COUNT_PER_STEP;
-
     this.#renderPagedFilms(this.#filmsListComponent.filmsListContainer, from, to);
-    // this.#renderedFilmPage = to;
 
     if (to >= filmsCount) {
       remove(this.#showMoreComponent);
@@ -317,7 +298,6 @@ export default class FilmListPresenter {
   }
 
   #clearMainContainer = ({ resetRenderedFilmCount = false, resetSortTypes = false } = {}) => {
-    // const filmsCount = this.filmsList.length;
 
     this.#filmsPresenter.forEach((presenter) => presenter.destroy());
     this.#filmsPresenter.clear();
@@ -342,8 +322,6 @@ export default class FilmListPresenter {
     if (resetRenderedFilmCount) {
       this.#renderedFilmPage = 1;
     }
-
-    // this.#renderedFilmPage = resetRenderedFilmCount ? 0 : Math.min(filmsCount, this.#renderedFilmPage);
 
     if (resetSortTypes) {
       this.#currentSortType = SortTypes.DEFAULT;
