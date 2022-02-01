@@ -74,7 +74,14 @@ export const Emoji = {
 };
 
 export const UserRating = {
-  NOVICE: { min: 1, max: 10, name: 'novice' },
-  FAN: { min: 11, max: 20, name: 'fan' },
-  MOVIE_BUFF: { min: 21, name: 'movie buff' },
+  NOVICE: { min: 1, max: 10, name: 'Novice' },
+  FAN: { min: 11, max: 20, name: 'Fan' },
+  MOVIE_BUFF: { min: 21, name: 'Movie buff' },
+};
+
+export const DAYS_SHORTCUTS = {
+  ONE_DAY: 1,
+  WEEK: 7,
+  MONTH: 31,
+  YEAR: 366,
 };
