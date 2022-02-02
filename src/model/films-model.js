@@ -3,13 +3,11 @@ import { UpdateType } from '../constants';
 
 export default class FilmsModel extends AbstractObservable{
   #filmsList = [];
-  #commentsModel = null;
   #apiService;
 
-  constructor(apiService, commentsModel) {
+  constructor(apiService) {
     super();
     this.#apiService = apiService;
-    this.#commentsModel = commentsModel;
   }
 
   set filmsList(filmsList) {
@@ -64,17 +62,6 @@ export default class FilmsModel extends AbstractObservable{
     } catch (err) {
       throw new Error('Can\'t update film');
     }
-  }
-
-  reloadComments = (filmId) => {
-    const index = this.#filmsList.findIndex((item) => item.id === filmId);
-
-    if (index === -1) {
-      throw new Error('Can\'t reload comment unexisting film');
-    }
-
-    const film = this.#filmsList[index];
-    this.#filmsList[index] = {...film, comments: this.#commentsModel.getCommentIdsByFilmId(film.id)};
   }
 
   #adaptToClient = (film) => {

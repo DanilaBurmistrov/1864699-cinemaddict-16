@@ -11,9 +11,15 @@ import { StatisticsType } from '../constants';
 import { MINUTES_IN_HOURS } from '../constants.js';
 import { getDisplayRating } from '../utils/common.js';
 
+const BAR_HEIGHT = 50;
+const BAR_THICKNESS = 24;
+const SIZE = 20;
+const OFFSET = 40;
+const PADDING = 100;
+const FONT_SIZE = 20;
+
 const renderChart = (statisticCtx, filmsList, statisticsType) => {
   const filteredFilmsList = getFilmsListFilteredByTime(statisticsType, filmsList);
-  const BAR_HEIGHT = 50;
   const filmGenresWithCount = getGenresWithCountFromFilmsList(filteredFilmsList);
   const sortedFilmGenres = filmGenresWithCount.sort(sortGenreCountDown);
   const filmGenres = sortedFilmGenres.map((genre) => genre.genre);
@@ -31,7 +37,7 @@ const renderChart = (statisticCtx, filmsList, statisticsType) => {
         backgroundColor: '#ffe800',
         hoverBackgroundColor: '#ffe800',
         anchor: 'start',
-        barThickness: 24,
+        barThickness: BAR_THICKNESS,
       }],
     },
     options: {
@@ -39,20 +45,20 @@ const renderChart = (statisticCtx, filmsList, statisticsType) => {
       plugins: {
         datalabels: {
           font: {
-            size: 20,
+            size: SIZE,
           },
           color: '#ffffff',
           anchor: 'start',
           align: 'start',
-          offset: 40,
+          offset: OFFSET,
         },
       },
       scales: {
         yAxes: [{
           ticks: {
             fontColor: '#ffffff',
-            padding: 100,
-            fontSize: 20,
+            padding: PADDING,
+            fontSize: FONT_SIZE,
           },
           gridLines: {
             display: false,

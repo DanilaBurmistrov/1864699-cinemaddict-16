@@ -25,7 +25,7 @@ export default class FilmPresenter {
   #filmCardComponent = null;
   #popupComponent = null;
   #siteFooter = document.querySelector('.footer');
-  _callback = {};
+  #callback = {};
 
   constructor(container, changeData, commentsModel, changeComment) {
     this.#container = container;
@@ -58,13 +58,11 @@ export default class FilmPresenter {
 
   openPopup = () => {
     const prevPopupComponent = this.#popupComponent;
-    let comments = [];
 
     if (!this.#commentsModel.hasComments(this.#film.id)) {
       this.#commentsModel.loadComments(UpdateType.LOADED_COMMENTS, this.#film.id);
-    } else {
-      comments = this.#commentsModel.getComments(this.#film.id);
     }
+    const comments = this.#commentsModel.getComments(this.#film.id);
 
     this.#popupComponent = new FilmPopupView(this.#film, comments);
 
@@ -113,20 +111,20 @@ export default class FilmPresenter {
   }
 
   setCardClick = (callback) => {
-    this._callback.cardClick = callback;
+    this.#callback.cardClick = callback;
   }
 
   setCardClose = (callback) => {
-    this._callback.cardClose = callback;
+    this.#callback.cardClose = callback;
   }
 
   #handleCardClick = () => {
-    this._callback.cardClick();
+    this.#callback.cardClick();
   }
 
   #handleClosePopup = () => {
     this.removePopup();
-    this._callback.cardClose();
+    this.#callback.cardClose();
   }
 
   #handlerFilmAction = (type) => {
@@ -138,7 +136,7 @@ export default class FilmPresenter {
 
       case FilmActionType.MARK_WATCHED:
         this.#changeData(
-          UpdateType.PATCH, { ...this.#film, isWatched: !this.#film.isWatched });
+          UpdateType.PATCH, { ...this.#film, isWatched: !this.#film.isWatched, watchingDate: (!this.#film.isWatched ? new Date(): null) });
         break;
 
       case FilmActionType.MARK_FAVORITE:

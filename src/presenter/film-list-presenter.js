@@ -24,6 +24,7 @@ import LoadingView from '../view/loading-view.js';
 
 const FILM_COUNT_PER_STEP = 5;
 const FILMS_EXTRA_COUNT = 2;
+const FILM_PAGE = 1;
 
 export default class FilmListPresenter {
   #container = null;
@@ -41,7 +42,7 @@ export default class FilmListPresenter {
   #filmPopupPresenter = null;
   #loadingComponent = new LoadingView();
 
-  #renderedFilmPage = 1;
+  #renderedFilmPage = FILM_PAGE;
   #filmsPresenter = new Map();
   #topRatedFilmsPresenter = new Map();
   #mostCommentedFilmsPresenter = new Map();
@@ -320,7 +321,7 @@ export default class FilmListPresenter {
     }
 
     if (resetRenderedFilmCount) {
-      this.#renderedFilmPage = 1;
+      this.#renderedFilmPage = FILM_PAGE;
     }
 
     if (resetSortTypes) {
