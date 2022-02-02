@@ -2,7 +2,6 @@ import AbstractView from './abstract-view';
 
 export default class SmartView extends AbstractView {
   _data = {};
-  _commentsData = [];
   #scrollLeft = null;
   #scrollTop = null;
 
@@ -56,15 +55,6 @@ export default class SmartView extends AbstractView {
       top: this.#scrollTop ? this.#scrollTop : 0,
       left: this.#scrollLeft ? this.#scrollLeft : 0
     };
-  }
-
-  updateCommentsData = (update) => {
-    if(!update) {
-      return;
-    }
-    this._commentsData = [...this._commentsData, {...update}];
-
-    this.updateElement();
   }
 
 }

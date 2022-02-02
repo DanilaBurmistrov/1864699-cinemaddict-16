@@ -9,10 +9,17 @@ import {
 } from '../utils/statistics.js';
 import { StatisticsType } from '../constants';
 import { MINUTES_IN_HOURS } from '../constants.js';
+import { getDisplayRating } from '../utils/common.js';
+
+const BAR_HEIGHT = 50;
+const BAR_THICKNESS = 24;
+const SIZE = 20;
+const OFFSET = 40;
+const PADDING = 100;
+const FONT_SIZE = 20;
 
 const renderChart = (statisticCtx, filmsList, statisticsType) => {
   const filteredFilmsList = getFilmsListFilteredByTime(statisticsType, filmsList);
-  const BAR_HEIGHT = 50;
   const filmGenresWithCount = getGenresWithCountFromFilmsList(filteredFilmsList);
   const sortedFilmGenres = filmGenresWithCount.sort(sortGenreCountDown);
   const filmGenres = sortedFilmGenres.map((genre) => genre.genre);
@@ -30,7 +37,7 @@ const renderChart = (statisticCtx, filmsList, statisticsType) => {
         backgroundColor: '#ffe800',
         hoverBackgroundColor: '#ffe800',
         anchor: 'start',
-        barThickness: 24,
+        barThickness: BAR_THICKNESS,
       }],
     },
     options: {
@@ -38,20 +45,20 @@ const renderChart = (statisticCtx, filmsList, statisticsType) => {
       plugins: {
         datalabels: {
           font: {
-            size: 20,
+            size: SIZE,
           },
           color: '#ffffff',
           anchor: 'start',
           align: 'start',
-          offset: 40,
+          offset: OFFSET,
         },
       },
       scales: {
         yAxes: [{
           ticks: {
             fontColor: '#ffffff',
-            padding: 100,
-            fontSize: 20,
+            padding: PADDING,
+            fontSize: FONT_SIZE,
           },
           gridLines: {
             display: false,
@@ -84,6 +91,7 @@ const createStatisticsTemplate = (data) => {
   const checkedStatisticsType = (type) => type === statisticsType ? ' checked="checked"' : '';
   const filteredFilmsList = getFilmsListFilteredByTime(statisticsType, filmsList);
   const filmsWatched = filteredFilmsList.length;
+  const filmsCount = filmsList.length;
 
   let totalDuration = 0;
   let totalDurationHourse = 0;
@@ -103,7 +111,7 @@ const createStatisticsTemplate = (data) => {
     <p class="statistic__rank">
       Your rank
       <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-      <span class="statistic__rank-label">Movie buff</span>
+      <span class="statistic__rank-label">${getDisplayRating(filmsCount)}</span>
     </p>
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
       <p class="statistic__filters-description">Show stats:</p>

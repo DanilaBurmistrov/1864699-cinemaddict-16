@@ -1,4 +1,5 @@
 export const MINUTES_IN_HOURS = 60;
+export const SHORT_DESCRIPTION_NUMBER_OF_SYMBOLS = 140;
 
 export const KeysName = {
   ESC: 'Esc',
@@ -41,13 +42,15 @@ export const filter = {
 
 export const CommentAction = {
   ADD: 'add',
-  DELETE: 'delete',
+  DELETE: 'delete'
 };
 
 export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
+  LOADED_COMMENTS: 'LOADED_COMMENTS',
 };
 
 export const MenuItem = {
@@ -63,4 +66,15 @@ export const StatisticsType = {
   YEAR: 'year',
 };
 
-export const SHORT_DESCRIPTION_NUMBER_OF_SYMBOLS = 140;
+export const Emoji = {
+  SMILE: 'smile',
+  SLEEPING: 'sleeping',
+  PUKE: 'puke',
+  ANGRY: 'angry',
+};
+
+export const UserRating = {
+  NOVICE: { min: 1, max: 10, name: 'Novice' },
+  FAN: { min: 11, max: 20, name: 'Fan' },
+  MOVIE_BUFF: { min: 21, name: 'Movie buff' },
+};

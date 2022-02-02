@@ -1,11 +1,13 @@
 import AbstractView from './abstract-view';
 
+const FILMS_COUNT_LENGTH = 0;
+
 const createSiteStatistics = (filmsCount) => (
   `<p>${filmsCount} movies inside</p>`
 );
 
 export default class FilmStatisticsView extends AbstractView {
-  #filmsCount = 0;
+  #filmsCount = FILMS_COUNT_LENGTH;
   constructor(filmsCount) {
     super();
     this.#filmsCount = filmsCount;

@@ -20,6 +20,7 @@ const createFilmCardTemplate = (film) => {
 
   const activeButtonClassName = (isActive) => isActive ? 'film-card__controls-item--active' : '';
   const isComments = comments.length ? `${comments.length  } comments` : '';
+  const [firstGenre] = genres;
 
   return `<article class="film-card">
   <a class="film-card__link">
@@ -28,7 +29,7 @@ const createFilmCardTemplate = (film) => {
     <p class="film-card__info">
       <span class="film-card__year">${releaseDate}</span>
       <span class="film-card__duration">${getTimeOutOfMinutes(duration)}</span>
-      <span class="film-card__genre">${genres[0]}</span>
+      <span class="film-card__genre">${firstGenre}</span>
     </p>
     <img src= ${poster} alt="" class="film-card__poster">
     <p class="film-card__description">${truncateText(description, SHORT_DESCRIPTION_NUMBER_OF_SYMBOLS)}</p>

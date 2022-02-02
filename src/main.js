@@ -4,30 +4,42 @@ import FilmListPresenter from './presenter/film-list-presenter.js';
 import FilmsModel from './model/films-model.js';
 import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
-import { MenuItem } from './constants.js';
-import {generateFilmInfo} from './mock/films-info';
-import { generateComments } from './mock/films-info';
-import {render, remove} from './render.js';
+import { MenuItem, UpdateType } from './constants.js';
+import { render, remove } from './render.js';
 import StatisticsView from './view/statistics-view.js';
 import UserRatingView from './view/user-rating-view.js';
+import ApiService from './api-service.js';
 
-const CARD_COUNT = 15;
+const AUTHORIZATION = 'Basic 3zwxrtcyvubinjomkl';
+const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict';
 
-const films = Array.from({length: CARD_COUNT}, generateFilmInfo);
-const comments = generateComments(films);
+const apiService = new ApiService(END_POINT, AUTHORIZATION);
+const commentsModel = new CommentsModel(apiService);
+const filmsModel = new FilmsModel(apiService, commentsModel);
+
 const siteHeader = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
 const siteFooter = document.querySelector('.footer');
 const siteFooterStatistics = siteFooter.querySelector('.footer__statistics');
 
-const commentsModel = new CommentsModel();
-commentsModel.comments = comments;
+let userRatingView;
 
-const filmsModel = new FilmsModel(commentsModel);
-filmsModel.filmsList = films;
+const handleModelChange = (updateType) => {
+  if (updateType === UpdateType.INIT) {
+    render(siteFooterStatistics, new FilmStatisticsView(filmsModel.filmsList.length));
+  }
 
-render(siteHeader, new UserRatingView());
-render(siteFooterStatistics, new FilmStatisticsView(filmsModel.filmsList.length));
+  if (userRatingView) {
+    remove(userRatingView);
+  }
+
+  userRatingView = new UserRatingView(filmsModel.watchedFilmsList.length);
+
+  render(siteHeader, userRatingView);
+
+};
+
+filmsModel.addObserver(handleModelChange);
 
 const filterModel = new FilterModel();
 
@@ -51,8 +63,11 @@ const handleSiteMenuClick = (menuItem) => {
   }
 };
 
-filterPresenter.setMenuClickHandler(handleSiteMenuClick);
-
 filterPresenter.init();
 filmListPresenter.init();
+
+filmsModel.init().finally(() => {
+  filterPresenter.setMenuClickHandler(handleSiteMenuClick);
+});
+
 
