@@ -5,7 +5,7 @@ export const KeysName = {
   ESC: 'Esc',
   ESCAPE: 'Escape',
   ENTER: 'Enter',
-  CTRL: 'Ctrl'
+  CTRL: 'Ctrl',
 };
 
 export const FilmActionType = {
@@ -42,7 +42,7 @@ export const filter = {
 
 export const CommentAction = {
   ADD: 'add',
-  DELETE: 'delete'
+  DELETE: 'delete',
 };
 
 export const UpdateType = {
