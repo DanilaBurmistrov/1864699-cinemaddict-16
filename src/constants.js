@@ -14,12 +14,6 @@ export const FilmActionType = {
   MARK_FAVORITE: 'favorite',
 };
 
-export const FilmListNames = {
-  ALL_FILMS: 'allFilms',
-  TOP_RATED: 'topRated',
-  MOST_COMMENTED: 'mostCommented',
-};
-
 export const SortTypes = {
   DEFAULT: 'default',
   DATE: 'date',

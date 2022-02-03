@@ -27,7 +27,7 @@ const createFilterTemplate = (filterItems, currentFilter, menuType) => {
   </nav>`;
 };
 
-export default class FilterView extends AbstractView {
+export default class MenuFilterView extends AbstractView {
   #filters = null;
   #currentFilter = null;
   #menuType = null;
@@ -53,6 +53,13 @@ export default class FilterView extends AbstractView {
   }
 
   #filterTypeChangeHandler = (evt) => {
+    if(evt.target.tagName !== 'A' ) {
+      if(evt.target.parentElement.tagName === 'A') {
+        evt.preventDefault();
+        this._callback.filterTypeChange(evt.target.parentElement.dataset.filterType);
+      }
+      return;
+    }
     evt.preventDefault();
     this._callback.filterTypeChange(evt.target.dataset.filterType);
   }

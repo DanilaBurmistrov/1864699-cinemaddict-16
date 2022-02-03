@@ -255,6 +255,7 @@ button {
 }
 
 .main-navigation__item-count {
+  pointer-events: none;
   background:rgba(0,46,255, 0.4);
   border-radius: 18px;
   font-weight: 500;

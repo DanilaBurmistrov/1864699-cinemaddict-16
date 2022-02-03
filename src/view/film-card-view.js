@@ -2,6 +2,7 @@ import AbstractView from './abstract-view';
 import { FilmActionType } from '../constants';
 import { SHORT_DESCRIPTION_NUMBER_OF_SYMBOLS } from '../constants';
 import { truncateText, getTimeOutOfMinutes } from '../utils/common';
+import dayjs from 'dayjs';
 
 const createFilmCardTemplate = (film) => {
   const {
@@ -27,7 +28,7 @@ const createFilmCardTemplate = (film) => {
     <h3 class="film-card__title">${title}</h3>
     <p class="film-card__rating">${rating}</p>
     <p class="film-card__info">
-      <span class="film-card__year">${releaseDate}</span>
+      <span class="film-card__year">${dayjs(releaseDate).format('YYYY')}</span>
       <span class="film-card__duration">${getTimeOutOfMinutes(duration)}</span>
       <span class="film-card__genre">${firstGenre}</span>
     </p>
@@ -68,10 +69,10 @@ export default class FilmCardView extends AbstractView {
 
   setClickHandler = (callback) => {
     this._callback.click = callback;
-    this.cardLinkElement.addEventListener('click', this.#clickHandler);
+    this.cardLinkElement.addEventListener('click', this.#cardClickHandler);
   }
 
-  #clickHandler = (evt) => {
+  #cardClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.click();
   }

@@ -17,6 +17,10 @@ const SIZE = 20;
 const OFFSET = 40;
 const PADDING = 100;
 const FONT_SIZE = 20;
+const Colors = {
+  WHITE: '#ffffff',
+  YELLOW: '#ffe800',
+};
 
 const renderChart = (statisticCtx, filmsList, statisticsType) => {
   const filteredFilmsList = getFilmsListFilteredByTime(statisticsType, filmsList);
@@ -25,7 +29,7 @@ const renderChart = (statisticCtx, filmsList, statisticsType) => {
   const filmGenres = sortedFilmGenres.map((genre) => genre.genre);
   const filmsByGenreCounts = sortedFilmGenres.map((genre) => genre.count);
 
-  statisticCtx.height = BAR_HEIGHT * 5;
+  statisticCtx.height = BAR_HEIGHT * filmsByGenreCounts.length;
 
   return  new Chart(statisticCtx, {
     plugins: [ChartDataLabels],
@@ -34,8 +38,8 @@ const renderChart = (statisticCtx, filmsList, statisticsType) => {
       labels: filmGenres,
       datasets: [{
         data: filmsByGenreCounts,
-        backgroundColor: '#ffe800',
-        hoverBackgroundColor: '#ffe800',
+        backgroundColor: Colors.YELLOW,
+        hoverBackgroundColor: Colors.YELLOW,
         anchor: 'start',
         barThickness: BAR_THICKNESS,
       }],
@@ -47,7 +51,7 @@ const renderChart = (statisticCtx, filmsList, statisticsType) => {
           font: {
             size: SIZE,
           },
-          color: '#ffffff',
+          color: Colors.WHITE,
           anchor: 'start',
           align: 'start',
           offset: OFFSET,
@@ -56,7 +60,7 @@ const renderChart = (statisticCtx, filmsList, statisticsType) => {
       scales: {
         yAxes: [{
           ticks: {
-            fontColor: '#ffffff',
+            fontColor: Colors.WHITE,
             padding: PADDING,
             fontSize: FONT_SIZE,
           },
@@ -187,11 +191,11 @@ export default class StatisticsView extends SmartView {
 
   #setTimeChange = () => {
     this.element.querySelectorAll('.statistic__filters-input').forEach((input) => {
-      input.addEventListener('click', this.#actionChangeTime);
+      input.addEventListener('click', this.#inputChangeHandler);
     });
   }
 
-  #actionChangeTime = (evt) => {
+  #inputChangeHandler = (evt) => {
     evt.preventDefault();
     const statisticsType = evt.target.value;
 

@@ -88,11 +88,11 @@ export default class FilmListPresenter {
     this.#commentsModel.addObserver(this.#handleCommentEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
 
-    this.#renderMainContainer({ resetRenderedFilmCount: true, resetSortType: true });
+    this.#renderMainContainer({ resetRenderedFilmCount: true, resetSortTypes: true });
   }
 
   destroy = () => {
-    this.#clearMainContainer({ resetRenderedFilmCount: true, resetSortType: true });
+    this.#clearMainContainer({ resetRenderedFilmCount: true, resetSortTypes: true });
 
     remove(this.#filmsListComponent);
     remove(this.#sortComponent);
@@ -117,7 +117,7 @@ export default class FilmListPresenter {
         this.#renderMainContainer();
         break;
       case UpdateType.MAJOR:
-        this.#clearMainContainer({ resetRenderedFilmCount: true, resetSortType: true });
+        this.#clearMainContainer({ resetRenderedFilmCount: true, resetSortTypes: true });
         this.#renderMainContainer();
         break;
       case UpdateType.INIT:
@@ -289,7 +289,7 @@ export default class FilmListPresenter {
   }
 
   #renderLoading = () => {
-    render(this.#filmsComponent, this.#loadingComponent, RenderPosition.BEFOREBEGIN);
+    render(this.#container, this.#loadingComponent, RenderPosition.BEFOREEND);
   }
 
   #handleLoadedComments = ({ filmId }) => {

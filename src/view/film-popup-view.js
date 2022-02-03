@@ -2,6 +2,7 @@ import he from 'he';
 import { FilmActionType, CommentAction, Emoji } from '../constants';
 import { getHumanFormattedDate, getTimeOutOfMinutes } from '../utils/common';
 import SmartView from './smart-view';
+import dayjs from 'dayjs';
 
 const generateGenresTemplate = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
 
@@ -29,8 +30,8 @@ const generateComment = (item, isDeleting, isDisabled, deletingCommentId) => {
     </li>`;
 };
 
-const generateCommentTemplate = (commentList, isDeleting, isDisabled, deletingCommentId) => commentList.length
-  ? commentList.map((comment) => generateComment(comment, isDeleting, isDisabled, deletingCommentId)).join('')
+const generateCommentTemplate = (commentsList, isDeleting, isDisabled, deletingCommentId) => commentsList.length
+  ? commentsList.map((comment) => generateComment(comment, isDeleting, isDisabled, deletingCommentId)).join('')
   : '';
 const createCommentEmojiTemplate = (emoji) => emoji ? `<img src="images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">` : '';
 
@@ -100,7 +101,7 @@ const createFilmDetailsTemplate = (film, comments) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${releaseDate}</td>
+              <td class="film-details__cell">${dayjs(releaseDate).format('DD MMMM YYYY')}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
@@ -179,9 +180,6 @@ const createFilmDetailsTemplate = (film, comments) => {
 };
 
 export default class FilmPopupView extends SmartView {
-  _scrollPosition = 0;
-  #elementScroll;
-  #newElementScroll;
   #comments = [];
 
   constructor(film, comments) {
@@ -227,15 +225,14 @@ export default class FilmPopupView extends SmartView {
     this._callback.commentAction = callback;
 
     this.element.querySelectorAll('.film-details__comment-delete').forEach((button) => {
-      button.addEventListener('click', this.#deleteCommentHandler);
+      button.addEventListener('click', this.#commentClickDeleteHandler);
     });
   }
 
-  #deleteCommentHandler = (evt) => {
+  #commentClickDeleteHandler = (evt) => {
     evt.preventDefault();
     const commentId = evt.target.dataset.commentId;
     const index = this.#comments.findIndex((comment) => comment.id === commentId);
-
     if (index === -1) {
       throw new Error('Can\'t delete unexisting comment');
     }
@@ -262,26 +259,18 @@ export default class FilmPopupView extends SmartView {
     deletingCommentId: null,
   });
 
-  reset = (film) => {
-    this.updateData(
-      FilmPopupView.parseFilmToData(film),
-    );
-  }
-
   #setInnerHandlers = () => {
     this.element.querySelectorAll('input[name="comment-emoji"]').forEach((input) => {
-      input.addEventListener('click', this.#changeCommentEmoji);
+      input.addEventListener('click', this.#commentEmojiClickChangeHandler);
     });
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputHandler);
   }
 
-  #changeCommentEmoji = (evt) => {
+  #commentEmojiClickChangeHandler = (evt) => {
     evt.preventDefault();
-    this.saveScrollPosition();
     this.updateData({
       commentEmoji: evt.target.value,
     });
-    this.setScrollPosition();
   }
 
   #commentInputHandler = (evt) => {
@@ -296,16 +285,6 @@ export default class FilmPopupView extends SmartView {
     this.setCloseClickHandler(this._callback.closeClick);
     this.setActionHandler(this._callback.action);
     this.setCommentActionHandler(this._callback.commentAction);
-  }
-
-  saveScrollPosition = () => {
-    this.#elementScroll = document.querySelector('.film-details');
-    this._scrollPosition = this.#elementScroll.scrollTop;
-  }
-
-  setScrollPosition = () => {
-    this.#newElementScroll = document.querySelector('.film-details');
-    this.#newElementScroll.scrollTop = this._scrollPosition;
   }
 
 }
