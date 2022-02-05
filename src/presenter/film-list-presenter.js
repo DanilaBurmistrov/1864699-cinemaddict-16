@@ -161,11 +161,15 @@ export default class FilmListPresenter {
   }
 
   #handleCommentChange = async (actionType, updateType, update) => {
+    const { filmId } = update;
+
     switch (actionType) {
       case CommentAction.DELETE:
         this.#filmPopupPresenter.setViewState(FilmPresenterViewState.DELETING, update.comment.id);
         try {
-          await this.#commentsModel.deleteComment(updateType, update);
+          await this.#commentsModel.deleteComment(update);
+          await this.#filmsModel.updateFilmCommentsIds(updateType, filmId, this.#commentsModel.getCommentsIds(filmId));
+
         } catch (err) {
           this.#filmPopupPresenter.setAborting();
         }
@@ -173,7 +177,9 @@ export default class FilmListPresenter {
       case CommentAction.ADD:
         this.#filmPopupPresenter.setSaving();
         try {
-          await this.#commentsModel.addComment(updateType, update);
+          await this.#commentsModel.addComment(update);
+          await this.#filmsModel.updateFilmCommentsIds(updateType, filmId, this.#commentsModel.getCommentsIds(filmId));
+
         } catch (err) {
           this.#filmPopupPresenter.setAborting();
         }
@@ -263,12 +269,12 @@ export default class FilmListPresenter {
   }
 
   #renderExtraFilmsComponent = () => {
-    if(this.topRatedFilmsList && this.topRatedFilmsList.length !== 0){
+    if (this.topRatedFilmsList?.length !== 0) {
       render(this.#filmsComponent, this.#filmsExtraTopRatedComponent, RenderPosition.BEFOREEND);
       const topRatedContainerElement = this.#filmsExtraTopRatedComponent.filmsExtraTopRatedContainer;
       this.#renderFilms(topRatedContainerElement, this.topRatedFilmsList, this.#topRatedFilmsPresenter);
     }
-    if(this.mostCommentedFilmsList && this.mostCommentedFilmsList.length !== 0){
+    if (this.mostCommentedFilmsList?.length !== 0) {
       render(this.#filmsComponent, this.#filmsExtraMostCommentedComponent, RenderPosition.BEFOREEND);
       const mostCommentedContainerElement = this.#filmsExtraMostCommentedComponent.filmsExtraMostCommentedContainer;
       this.#renderFilms(mostCommentedContainerElement, this.mostCommentedFilmsList, this.#mostCommentedFilmsPresenter);
@@ -283,11 +289,17 @@ export default class FilmListPresenter {
     render(this.#filmsComponent, this.#noFilmsComponent, RenderPosition.BEFOREBEGIN);
   }
 
-  #reloadPoppup = () => {
+  #updatePopup = () => {
     if (this.#filmPopupPresenter) {
-      const filmOnPopup = this.#filmsModel.getFilmById(this.#filmPopupPresenter.filmId);
-      this.#filmPopupPresenter.init(filmOnPopup);
-      this.#filmPopupPresenter.openPopup();
+      const {filmId} = this.#filmPopupPresenter;
+
+      const film = this.#filmsModel.getFilmById(filmId);
+      const comments = this.#commentsModel.getComments(filmId);
+
+      if (film) {
+        this.#filmPopupPresenter.init(film);
+        this.#filmPopupPresenter.updatePopup(film, comments);
+      }
     }
   }
 
@@ -342,7 +354,7 @@ export default class FilmListPresenter {
       this.#renderNoFilmsComponent();
       return;
     }
-    this.#reloadPoppup();
+    this.#updatePopup();
     this.#renderExtraFilmsComponent();
     this.#renderSort();
     this.#initFilms();

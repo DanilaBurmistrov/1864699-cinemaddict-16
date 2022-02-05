@@ -34,26 +34,32 @@ export default class CommentsModel extends AbstractObservable {
     return this.#comments.get(fildId);
   }
 
-  addComment = async (updateType, update) => {
-    const { comment, fildId } = update;
+  getCommentsIds = (fildId) => {
+    if (!this.hasComments(fildId)) {
+      return [];
+    }
+
+    return this.#comments.get(fildId).map((c) => c.id);
+  }
+
+  addComment = async (update) => {
+    const { comment, filmId } = update;
     try {
-      const { comments } = await this.#apiService.addComment(comment, fildId);
+      const { comments } = await this.#apiService.addComment(comment, filmId);
 
       const newComments = comments.map(this.#adaptToClient);
 
-      this.#comments.set(fildId, newComments);
-
-      this._notify(updateType, { fildId });
+      this.#comments.set(filmId, newComments);
 
     } catch (err) {
       throw new Error('Can\'t add comment');
     }
   }
 
-  deleteComment = async (updateType, update) => {
-    const { comment, fildId } = update;
+  deleteComment = async (update) => {
+    const { comment, filmId } = update;
 
-    const comments = this.getComments(fildId);
+    const comments = this.getComments(filmId);
 
     if (!comments) {
       throw new Error('Can\'t delete comments for film');
@@ -73,9 +79,7 @@ export default class CommentsModel extends AbstractObservable {
         ...comments.slice(index + 1),
       ];
 
-      this.#comments.set(fildId, newComments);
-
-      this._notify(updateType, { idFilm: fildId });
+      this.#comments.set(filmId, newComments);
 
     } catch (err) {
       throw new Error('Can\'t delete comment');

@@ -1,7 +1,7 @@
 import AbstractObservable from '../utils/abstract-observable';
 import { UpdateType } from '../constants';
 
-export default class FilmsModel extends AbstractObservable{
+export default class FilmsModel extends AbstractObservable {
   #filmsList = [];
   #apiService;
 
@@ -22,7 +22,7 @@ export default class FilmsModel extends AbstractObservable{
     try {
       const filmsList = await this.#apiService.filmsList;
       this.#filmsList = filmsList.map(this.#adaptToClient);
-    } catch(err) {
+    } catch (err) {
       this.#filmsList = [];
     }
 
@@ -33,14 +33,18 @@ export default class FilmsModel extends AbstractObservable{
     return this.#filmsList.filter((film) => film.isWatched);
   }
 
-  getFilmById = (idFilm) => {
-    const index = this.#filmsList.findIndex((film) => film.id === idFilm);
+  getFilmById = (idFilm) => this.#filmsList.find((film) => film.id === idFilm);
 
-    if (index === -1) {
-      throw new Error('Can\'t get unexisting film');
+  updateFilmCommentsIds = async (updateType, fildId, commentsIds) => {
+    const film = this.getFilmById(fildId);
+
+    if (!film) {
+      throw new Error('Can\'t update comments unexisting film');
     }
 
-    return this.filmsList[index];
+    const updatedFilm = { ...film, comments: commentsIds };
+
+    await this.updateFilm(updateType, updatedFilm);
   }
 
   updateFilm = async (updateType, update) => {
@@ -65,7 +69,8 @@ export default class FilmsModel extends AbstractObservable{
   }
 
   #adaptToClient = (film) => {
-    const adaptedFilm = {...film,
+    const adaptedFilm = {
+      ...film,
       title: film.film_info.title,
       titleOriginal: film.film_info?.alternative_title,
       director: film.film_info?.director,
@@ -76,7 +81,7 @@ export default class FilmsModel extends AbstractObservable{
       genres: film.film_info?.genre,
       description: film.film_info?.description,
       rating: film.film_info?.total_rating,
-      year: new Date (film.film_info?.release.date),
+      year: new Date(film.film_info?.release.date),
       releaseDate: film.film_info?.release?.date ? new Date(film.film_info.release.date) : null,
       poster: film.film_info?.poster,
       age: film.film_info?.age_rating,

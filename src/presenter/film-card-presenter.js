@@ -42,6 +42,7 @@ export default class FilmPresenter {
     this.#film = film;
 
     const prevFilmComponent = this.#filmCardComponent;
+
     this.#filmCardComponent = new FilmCardView(film);
 
     this.#filmCardComponent.setClickHandler(this.#handleCardClick);
@@ -84,6 +85,12 @@ export default class FilmPresenter {
     replace(this.#popupComponent, prevPopupComponent);
     remove(prevPopupComponent);
   }
+
+  updatePopup = (film, comments) => {
+    if(this.#popupComponent) {
+      this.#popupComponent.update(film, comments);
+    }
+  };
 
   removePopup() {
     document.removeEventListener('keydown', this.#onEscKeyDown);
@@ -148,7 +155,7 @@ export default class FilmPresenter {
   }
 
   #handlerCommentAction = (type, comment) => {
-    this.#changeComment(type, UpdateType.MINOR, {comment, fildId: this.#film.id});
+    this.#changeComment(type, UpdateType.MINOR, {comment, filmId: this.#film.id});
   }
 
   destroy = () => {

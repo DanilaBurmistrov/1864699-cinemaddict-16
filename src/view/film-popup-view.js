@@ -30,8 +30,8 @@ const generateComment = (item, isDeleting, isDisabled, deletingCommentId) => {
     </li>`;
 };
 
-const generateCommentTemplate = (commentsList, isDeleting, isDisabled, deletingCommentId) => commentsList.length
-  ? commentsList.map((comment) => generateComment(comment, isDeleting, isDisabled, deletingCommentId)).join('')
+const generateCommentTemplate = (comments, isDeleting, isDisabled, deletingCommentId) => comments.length
+  ? comments.map((comment) => generateComment(comment, isDeleting, isDisabled, deletingCommentId)).join('')
   : '';
 const createCommentEmojiTemplate = (emoji) => emoji ? `<img src="images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">` : '';
 
@@ -199,14 +199,15 @@ export default class FilmPopupView extends SmartView {
     return this.element.querySelector('.film-details__close-btn');
   }
 
+  update = (film, comments) => {
+    this._data = FilmPopupView.parseFilmToData(film);
+    this.#comments = comments;
+    this.updateData({});
+  }
+
   setCloseClickHandler = (callback) => {
     this._callback.closeClick = callback;
     this.closeButtonElement.addEventListener('click', this.#closeClickHandler);
-  }
-
-  #closeClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.closeClick();
   }
 
   setActionHandler = (callback) => {
@@ -216,27 +217,12 @@ export default class FilmPopupView extends SmartView {
     });
   }
 
-  #actionClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.action(evt.target.dataset.actionType);
-  }
-
   setCommentActionHandler = (callback) => {
     this._callback.commentAction = callback;
 
     this.element.querySelectorAll('.film-details__comment-delete').forEach((button) => {
       button.addEventListener('click', this.#commentClickDeleteHandler);
     });
-  }
-
-  #commentClickDeleteHandler = (evt) => {
-    evt.preventDefault();
-    const commentId = evt.target.dataset.commentId;
-    const index = this.#comments.findIndex((comment) => comment.id === commentId);
-    if (index === -1) {
-      throw new Error('Can\'t delete unexisting comment');
-    }
-    this._callback.commentAction(CommentAction.DELETE, this.#comments[index]);
   }
 
   addCommentHandler = () => {
@@ -249,15 +235,26 @@ export default class FilmPopupView extends SmartView {
     this._callback.commentAction(CommentAction.ADD, newComment, this._data.id);
   }
 
-  static parseFilmToData = (film) => ({
-    ...film,
-    comment: '',
-    commentEmoji: null,
-    isDisabled: false,
-    isSaving: false,
-    isDeleting: false,
-    deletingCommentId: null,
-  });
+  #closeClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.closeClick();
+  }
+
+
+  #actionClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.action(evt.target.dataset.actionType);
+  }
+
+  #commentClickDeleteHandler = (evt) => {
+    evt.preventDefault();
+    const commentId = evt.target.dataset.commentId;
+    const index = this.#comments.findIndex((comment) => comment.id === commentId);
+    if (index === -1) {
+      throw new Error('Can\'t delete unexisting comment');
+    }
+    this._callback.commentAction(CommentAction.DELETE, this.#comments[index]);
+  }
 
   #setInnerHandlers = () => {
     this.element.querySelectorAll('input[name="comment-emoji"]').forEach((input) => {
@@ -286,5 +283,15 @@ export default class FilmPopupView extends SmartView {
     this.setActionHandler(this._callback.action);
     this.setCommentActionHandler(this._callback.commentAction);
   }
+
+  static parseFilmToData = (film) => ({
+    ...film,
+    comment: '',
+    commentEmoji: null,
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
+    deletingCommentId: null,
+  });
 
 }
