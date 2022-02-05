@@ -123,16 +123,16 @@ export default class FilmListPresenter {
         this.#handleLoadedComments(data);
         break;
       case UpdateType.PATCH:
-        this.#saveWindowScroll(window);
+        this.#saveWindowScroll();
         this.#clearMainContainer();
         this.#renderMainContainer();
-        this.#restoreSavedScroll(window);
+        this.#restoreSavedScroll();
         break;
       case UpdateType.MINOR:
-        this.#saveWindowScroll(window);
+        this.#saveWindowScroll();
         this.#clearMainContainer();
         this.#renderMainContainer();
-        this.#restoreSavedScroll(window);
+        this.#restoreSavedScroll();
         break;
       case UpdateType.MAJOR:
         this.#clearMainContainer({ resetRenderedFilmCount: true, resetSortTypes: true });
