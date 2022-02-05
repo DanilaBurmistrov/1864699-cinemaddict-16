@@ -49,6 +49,8 @@ export default class FilmListPresenter {
   #currentSortType = SortTypes.DEFAULT;
   #filterType = FilterType.ALL;
   #isLoading = true;
+  #scrollLeft = null;
+  #scrollTop = null;
 
   constructor(container, filmsModel, commentsModel, filterModel) {
     this.#container = container;
@@ -74,12 +76,24 @@ export default class FilmListPresenter {
 
   get topRatedFilmsList() {
     const filmsList = this.#filmsModel.filmsList.slice();
-    return filmsList.sort((prev, next) => next.rating - prev.rating).slice(0, FILMS_EXTRA_COUNT);
+    const filmsWithRating = filmsList.filter((film) => film.rating > 0);
+
+    if (!filmsWithRating.length) {
+      return [];
+    }
+
+    return filmsWithRating.sort((prev, next) => next.rating - prev.rating).slice(0, FILMS_EXTRA_COUNT);
   }
 
   get mostCommentedFilmsList() {
     const filmsList = this.#filmsModel.filmsList.slice();
-    return filmsList.sort((prev, next) => next.comments.length - prev.comments.length).slice(0, FILMS_EXTRA_COUNT);
+    const filmsWithComments = filmsList.filter((film) => film.comments.length > 0);
+
+    if (!filmsWithComments.length) {
+      return [];
+    }
+
+    return filmsWithComments.sort((prev, next) => next.comments.length - prev.comments.length).slice(0, FILMS_EXTRA_COUNT);
   }
 
   init = () => {
@@ -109,12 +123,16 @@ export default class FilmListPresenter {
         this.#handleLoadedComments(data);
         break;
       case UpdateType.PATCH:
+        this.#saveWindowScroll(window);
         this.#clearMainContainer();
         this.#renderMainContainer();
+        this.#restoreSavedScroll(window);
         break;
       case UpdateType.MINOR:
+        this.#saveWindowScroll(window);
         this.#clearMainContainer();
         this.#renderMainContainer();
+        this.#restoreSavedScroll(window);
         break;
       case UpdateType.MAJOR:
         this.#clearMainContainer({ resetRenderedFilmCount: true, resetSortTypes: true });
@@ -136,6 +154,17 @@ export default class FilmListPresenter {
       case UpdateType.MINOR:
         this.#handleModelEvent(updateType, data);
         break;
+    }
+  }
+
+  #saveWindowScroll = () => {
+    this.#scrollLeft = window.scrollX;
+    this.#scrollTop = window.scrollY;
+  }
+
+  #restoreSavedScroll = () => {
+    if (this.#scrollLeft !== null && this.#scrollTop !== null) {
+      window.scrollTo(this.#scrollLeft, this.#scrollTop);
     }
   }
 
